@@ -139,6 +139,26 @@
 
             });    
 
+        var persistence =
+            global.PacemakerPersistenceRuntime.save({
+
+                experience:
+                    input.experience || null,
+
+                type:
+                    "growth",
+
+                learning:
+                    memoryUpdate.learning,
+
+                nextStep:
+                    memoryUpdate.nextStep,
+
+                data:
+                    memoryUpdate
+
+        });    
+
         var result =
             global.PacemakerResultRuntime.execute({
 
@@ -189,6 +209,9 @@
 
             memoryUpdate:
                 memoryUpdate,    
+
+            persistence:
+                persistence,    
 
             result:
                 result,    
