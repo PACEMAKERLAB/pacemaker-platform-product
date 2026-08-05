@@ -2,7 +2,7 @@
  * PACEMAKER Platform
  * Experience Gateway Engine
  *
- * Version 1.0.0
+ * Version 1.0.1
  *
  * Responsibility
  * - Convert Experience input for Alpha Engine
@@ -33,11 +33,15 @@
 
 
             input:
-                gateway.userInput,
+                gateway.userInput || {},
 
 
             source:
-                gateway.source
+                gateway.source,
+
+
+            createdAt:
+                gateway.createdAt
 
         };
 

@@ -2,7 +2,12 @@
  * PACEMAKER Platform
  * Experience Flow Runtime
  *
- * Version 1.1.0
+ * Sprint 188
+ * Version 1.2.0
+ *
+ * Responsibility
+ * - Resolve next Experience
+ * - Provide navigation flow
  */
 
 (function(global){
@@ -19,64 +24,61 @@
             );
 
 
+
         var next =
             global.PacemakerFlowController.next(
                 model.experience
             );
 
 
+
         model.next =
             next;
 
 
-        var gatewayResult =
-            null;
-
-
-        if (
-            global.PacemakerExperienceGatewayRuntime
-            &&
-            next
-        ) {
-
-
-            gatewayResult =
-                global.PacemakerExperienceGatewayRuntime.execute({
-
-                    experience:
-                        next,
-
-                    stage:
-                        next,
-
-                    userInput:
-                    {
-                        source:
-                            "flow"
-                    }
-
-                });
-
-        }
-
 
         return {
 
-            flow:
-                model,
 
-            gateway:
-                gatewayResult
+            experience:
+
+                model.experience,
+
+
+            next:
+
+                next,
+
+
+            route:
+
+                next
+
+                ?
+
+                "experience/" +
+                next +
+                ".html"
+
+                :
+
+                null
+
 
         };
+
 
     }
 
 
+
     global.PacemakerFlowRuntime = {
 
+
         execute:
+
             execute
+
 
     };
 

@@ -2,7 +2,10 @@
  * PACEMAKER Platform
  * Experience Navigation Controller
  *
- * Version 1.0.0
+ * Version 1.1.0
+ *
+ * Responsibility
+ * - Resolve Experience Route
  */
 
 (function(global){
@@ -12,28 +15,59 @@
 
     var ROUTES = {
 
+
         start:
-            "experience/start.html",
+
+            "experience/start/start.html",
+
 
         understand:
-            "experience/understand.html",
+
+            "experience/understand/understand.html",
+
+
+        analyze:
+
+            "experience/analyze/analyze.html",    
+            
+
+        reflection:
+
+            "experience/reflection/reflection.html",    
+
 
         thinking:
-            "experience/thinking.html",
+
+            "experience/thinking/thinking.html",
+
 
         action:
-            "experience/action.html",
+
+            "experience/action/action.html",
+
 
         growth:
-            "experience/growth.html",
+
+            "experience/growth/growth.html",
+
+
+        result:
+
+            "experience/result/result.html",
+
 
         care:
-            "experience/care.html",
+
+            "experience/care/care.html",
+
 
         continue:
-            "experience/continue.html"
+
+            "experience/continue/continue.html"
+
 
     };
+
 
 
     function resolve(experience){
@@ -45,12 +79,17 @@
     }
 
 
+
     global.PacemakerNavigationController = {
 
+
         resolve:
+
             resolve
 
+
     };
+
 
 
 }(window));

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+PACEMAKER Understand Experience
+</title>
+
+</head>
+
+
+<body>
+
+
+<div id="pacemaker-understand">
+
+<h1>
+PACEMAKER Understand
+</h1>
+
+<p>
+Experience 이해 단계
+</p>
+
+</div>
+
+
+
+<script src="../../runtime/experience-session/session-model.js"></script>
+<script src="../../runtime/experience-session/session-storage.js"></script>
+<script src="../../runtime/experience-session/session-state.js"></script>
+<script src="../../runtime/experience-session/session-history.js"></script>
+<script src="../../runtime/experience-session/session-query.js"></script>
+<script src="../../runtime/experience-session/session-runtime.js"></script>
+
+
+<script src="model.js"></script>
+<script src="decision.js"></script>
+<script src="generator.js"></script>
+<script src="language.js"></script>
+<script src="renderer.js"></script>
+<script src="runtime.js"></script>
+
+
+<script src="runtime.js"></script>
+
+
+<script>
+
+var understandResult =
+
+    PacemakerUnderstandRuntime.execute({
+
+        source:
+            "understand-page"
+
+    });
+
+
+console.log(
+    "UNDERSTAND FLOW RESULT",
+    understandResult
+);
+
+
+if(
+
+    understandResult.nextStep &&
+    understandResult.nextStep.navigation &&
+    understandResult.nextStep.navigation.route
+
+){
+
+    window.location.href =
+
+        "/" +
+        understandResult.nextStep.navigation.route;
+
+}
+
+</script>
+
+
+</body>
+
+</html>

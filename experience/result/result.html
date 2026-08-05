@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+PACEMAKER Result Experience
+</title>
+
+</head>
+
+
+<body>
+
+
+<div id="pacemaker-result"></div>
+
+
+<!-- Session -->
+
+<script src="../../runtime/experience-session/session-model.js"></script>
+<script src="../../runtime/experience-session/session-storage.js"></script>
+<script src="../../runtime/experience-session/session-state.js"></script>
+<script src="../../runtime/experience-session/session-history.js"></script>
+<script src="../../runtime/experience-session/session-query.js"></script>
+
+
+<!-- Result -->
+
+<script src="../../runtime/11_result/result-model.js"></script>
+<script src="../../runtime/11_result/result-generator.js"></script>
+<script src="../../runtime/11_result/result-renderer.js"></script>
+<script src="../../runtime/11_result/result-runtime.js"></script>
+
+
+<!-- Experience Result -->
+
+<script src="runtime.js"></script>
+<script src="index.js"></script>
+
+
+<script>
+
+var session = null;
+
+
+if (
+    window.PacemakerExperienceSessionQuery
+) {
+
+    session =
+        PacemakerExperienceSessionQuery.latest();
+
+}
+
+
+
+var input = {
+
+    experience:
+        "result",
+
+    session:
+        session
+
+};
+
+
+
+PacemakerResultRuntime.execute(
+    input
+);
+
+
+</script>
+
+
+</body>
+
+</html>

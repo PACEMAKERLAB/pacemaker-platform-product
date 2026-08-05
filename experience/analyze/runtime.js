@@ -1,11 +1,11 @@
 /**
  * PACEMAKER Platform
- * Understand Experience
+ * Analyze Experience
  * Runtime
  * Version 1.0.0
  *
  * Responsibility
- * - Execute the Understand Experience flow.
+ * - Execute the Analyze Experience flow.
  */
 
 (function (global) {
@@ -15,27 +15,27 @@
     function execute(input) {
 
         var model =
-            global.PacemakerUnderstandModel.create(
+            global.PacemakerAnalyzeModel.create(
                 input
             );
 
         var decision =
-            global.PacemakerUnderstandDecision.execute(
+            global.PacemakerAnalyzeDecision.execute(
                 model
             );
 
         var result =
-            global.PacemakerUnderstandGenerator.generate(
+            global.PacemakerAnalyzeGenerator.generate(
                 decision,
                 model
             );
 
         var language =
-            global.PacemakerUnderstandLanguage.create(
+            global.PacemakerAnalyzeLanguage.create(
                 result
             );
 
-        global.PacemakerUnderstandRenderer.render(
+        global.PacemakerAnalyzeRenderer.render(
             language
         );
 
@@ -47,22 +47,14 @@
             result:
                 result,
 
-            nextStep: {
-
-    navigation: {
-
-        route:
-            "experience/analyze/analyze.html"
-
-    }
-
-}
+            nextStep:
+                null
 
         };
 
     }
 
-    global.PacemakerUnderstandRuntime = {
+    global.PacemakerAnalyzeRuntime = {
 
         execute: execute
 

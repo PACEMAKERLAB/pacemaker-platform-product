@@ -90,8 +90,9 @@
 
 <!-- Experience Navigation -->
 
-<script src="runtime/experience-navigation/navigation-model.js"></script>
 <script src="runtime/experience-navigation/navigation-controller.js"></script>
+<script src="runtime/experience-navigation/navigation-model.js"></script>
+<script src="runtime/experience-navigation/navigation-executor.js"></script>
 <script src="runtime/experience-navigation/navigation-runtime.js"></script>
 
 <!-- Experience Runtime -->
@@ -109,6 +110,27 @@
 <script src="runtime/experience-gateway/experience-gateway-model.js"></script>
 <script src="runtime/experience-gateway/experience-gateway-engine.js"></script>
 <script src="runtime/experience-gateway/experience-gateway-runtime.js"></script>
+<script src="runtime/experience-gateway/experience-gateway-result.js"></script>
+
+<!-- Experience Session -->
+
+<script src="runtime/experience-session/session-model.js"></script>
+<script src="runtime/experience-session/session-storage.js"></script>
+<script src="runtime/experience-session/session-state.js"></script>
+<script src="runtime/experience-session/session-history.js"></script>
+<script src="runtime/experience-session/session-runtime.js"></script>
+<script src="runtime/experience-session/session-query.js"></script>
+<script src="runtime/experience-session/continue-runtime.js"></script>
+
+<!-- Start Experience -->
+
+<script src="experience/start/model.js"></script>
+<script src="experience/start/decision.js"></script>
+<script src="experience/start/generator.js"></script>
+<script src="experience/start/language.js"></script>
+<script src="experience/start/renderer.js"></script>
+<script src="experience/start/runtime.js"></script>
+<script src="experience/start/index.js"></script>
 
 
 <!-- Alpha -->
@@ -247,6 +269,136 @@ console.log(
     "Alpha Engine Final Test",
 
     alphaResult
+
+);
+
+var gatewayResult =
+
+    PacemakerExperienceGatewayRuntime.execute({
+
+        experience:
+            "growth",
+
+        stage:
+            "start",
+
+        userInput:{
+            goal:"gateway test"
+        },
+
+        source:
+            "experience"
+
+    });
+
+
+console.log(
+
+    "Experience Gateway Test",
+
+    gatewayResult
+
+);
+
+var sessionResult =
+
+    PacemakerExperienceSessionRuntime.start({
+
+        experience:
+            "growth"
+
+    });
+
+
+
+console.log(
+
+    "Experience Session Test",
+
+    sessionResult
+
+);
+
+var sessionExecuteResult =
+
+    PacemakerExperienceSessionRuntime.execute({
+
+        experience:
+            "growth",
+
+        stage:
+            "start",
+
+        userInput:{
+
+            goal:
+                "session gateway test"
+
+        },
+
+        source:
+            "experience"
+
+    });
+
+
+
+console.log(
+
+    "Experience Session Execute Test",
+
+    sessionExecuteResult
+
+);
+
+var continueResult =
+
+    PacemakerExperienceContinueRuntime.resume();
+
+
+
+console.log(
+
+    "Experience Continue Test",
+
+    continueResult
+
+);
+
+var startResult =
+
+    PacemakerStartExperience.execute({
+
+        goal:
+            "start test"
+
+    });
+
+
+console.log(
+
+    "Start Experience Runtime Test",
+
+    startResult
+
+);
+
+var startGatewayTest =
+
+    PacemakerStartExperience.execute({
+
+        goal:
+            "gateway test"
+
+    });
+
+
+
+console.log(
+
+    "Start Gateway Integration Test",
+
+    startGatewayTest
 
 );
 

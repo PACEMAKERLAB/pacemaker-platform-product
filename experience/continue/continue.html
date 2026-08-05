@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+PACEMAKER Continue Experience
+</title>
+
+</head>
+
+
+<body>
+
+
+<div id="pacemaker-continue"></div>
+
+
+
+<!-- Session -->
+
+<script src="../../runtime/experience-session/session-model.js"></script>
+<script src="../../runtime/experience-session/session-storage.js"></script>
+<script src="../../runtime/experience-session/session-state.js"></script>
+<script src="../../runtime/experience-session/session-history.js"></script>
+<script src="../../runtime/experience-session/session-query.js"></script>
+<script src="../../runtime/experience-session/continue-runtime.js"></script>
+
+<!-- Navigation -->
+
+<script src="../../runtime/experience-navigation/navigation-controller.js"></script>
+<script src="../../runtime/experience-navigation/navigation-model.js"></script>
+<script src="../../runtime/experience-navigation/navigation-executor.js"></script>
+<script src="../../runtime/experience-navigation/navigation-runtime.js"></script>
+
+<!-- Continue Experience -->
+
+<script src="runtime.js"></script>
+<script src="index.js"></script>
+
+
+<script>
+
+
+var result =
+
+    PacemakerNavigationRuntime.execute({
+
+        experience:"start"
+
+    });
+
+
+
+console.log(
+    result
+);
+
+
+
+PacemakerNavigationExecutor.go(
+
+    result.navigation.route
+
+);
+
+
+
+</script>
+
+
+</body>
+
+</html>

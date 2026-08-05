@@ -23,23 +23,52 @@
 
 
         var result =
-            global.PacemakerAlphaEngine.execute({
+    global.PacemakerAlphaEngine.execute({
 
-                experience:
-                    gateway.experience
-
-            });
+        experience:
+            gateway.experience,
 
 
-        return {
+        stage:
+            gateway.stage,
 
-            gateway:
-                gateway,
 
-            alpha:
-                result
+        input:
+            gateway.input,
 
-        };
+
+        source:
+            gateway.source
+
+    });
+
+
+        var gatewayResult = {
+
+    gateway:
+        gateway,
+
+    alpha:
+        result
+
+};
+
+
+return {
+
+    raw:
+        gatewayResult,
+
+
+    result:
+
+        global
+        .PacemakerExperienceGatewayResult
+        .create(
+            gatewayResult
+        )
+
+};
 
     }
 

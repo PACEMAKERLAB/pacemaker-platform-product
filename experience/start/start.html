@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+PACEMAKER Start Experience
+</title>
+
+</head>
+
+
+<body>
+
+
+<div id="pacemaker-start">
+
+<h1>
+PACEMAKER Start
+</h1>
+
+<p>
+Experience 시작 준비
+</p>
+
+</div>
+
+
+
+<!-- Session -->
+
+<script src="../../runtime/experience-session/session-model.js"></script>
+<script src="../../runtime/experience-session/session-storage.js"></script>
+<script src="../../runtime/experience-session/session-state.js"></script>
+<script src="../../runtime/experience-session/session-history.js"></script>
+<script src="../../runtime/experience-session/session-query.js"></script>
+<script src="../../runtime/experience-session/session-runtime.js"></script>
+
+
+
+<!-- Platform -->
+
+<script src="../../runtime/platform-runtime.js"></script>
+
+
+
+<!-- Alpha Engine -->
+
+<script src="../../runtime/alpha-engine.js"></script>
+
+
+
+<!-- Experience Gateway -->
+
+<script src="../../runtime/experience-gateway/experience-gateway-engine.js"></script>
+<script src="../../runtime/experience-gateway/experience-gateway-model.js"></script>
+<script src="../../runtime/experience-gateway/experience-gateway-result.js"></script>
+<script src="../../runtime/experience-gateway/experience-gateway-runtime.js"></script>
+
+
+<!-- Runtime Core -->
+
+<script src="../../runtime/experience-runtime/experience-mapping.js"></script>
+<script src="../../runtime/experience-runtime/runtime-adapter.js"></script>
+<script src="../../runtime/experience-runtime/runtime-resolver.js"></script>
+<script src="../../runtime/experience-runtime/runtime-executor.js"></script>
+<script src="../../runtime/experience-runtime/result-aggregator.js"></script>
+
+
+
+<!-- Navigation -->
+
+<script src="../../runtime/experience-navigation/navigation-controller.js"></script>
+<script src="../../runtime/experience-navigation/navigation-model.js"></script>
+<script src="../../runtime/experience-navigation/navigation-executor.js"></script>
+<script src="../../runtime/experience-navigation/navigation-runtime.js"></script>
+
+
+
+<!-- Start Experience -->
+
+<script src="model.js"></script>
+<script src="decision.js"></script>
+<script src="generator.js"></script>
+<script src="language.js"></script>
+<script src="renderer.js"></script>
+<script src="runtime.js"></script>
+
+
+
+<script>
+
+
+var startResult =
+
+    PacemakerStartRuntime.execute({
+
+        source:
+            "start-page"
+
+    });
+
+
+
+console.log(
+    "START FLOW RESULT",
+    startResult
+);
+
+
+
+if(
+
+    startResult.nextStep &&
+    startResult.nextStep.navigation &&
+    startResult.nextStep.navigation.route
+
+){
+
+    window.location.href =
+
+        "/" +
+        startResult.nextStep.navigation.route;
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,6 +1,6 @@
 /**
  * PACEMAKER Platform
- * Understand Experience
+ * Reflection Experience
  * Runtime
  * Version 1.0.0
  *
@@ -15,27 +15,27 @@
     function execute(input) {
 
         var model =
-            global.PacemakerUnderstandModel.create(
+            global.PacemakerReflectionModel.create(
                 input
             );
 
         var decision =
-            global.PacemakerUnderstandDecision.execute(
+            global.PacemakerReflectionDecision.execute(
                 model
             );
 
         var result =
-            global.PacemakerUnderstandGenerator.generate(
+            global.PacemakerReflectionGenerator.generate(
                 decision,
                 model
             );
 
         var language =
-            global.PacemakerUnderstandLanguage.create(
+            global.PacemakerReflectionLanguage.create(
                 result
             );
 
-        global.PacemakerUnderstandRenderer.render(
+        global.PacemakerReflectionRenderer.render(
             language
         );
 
@@ -47,25 +47,18 @@
             result:
                 result,
 
-            nextStep: {
-
-    navigation: {
-
-        route:
-            "experience/analyze/analyze.html"
-
-    }
-
-}
+            nextStep:
+                null
 
         };
 
     }
 
-    global.PacemakerUnderstandRuntime = {
+    global.PacemakerReflectionRuntime = {
 
-        execute: execute
+    execute:
+        execute
 
-    };
+};
 
 }(window));

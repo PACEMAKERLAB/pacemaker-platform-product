@@ -2,10 +2,10 @@
  * PACEMAKER Platform
  * Result Generator
  *
- * Version 1.0.0
+ * Version 1.1.0
  *
  * Responsibility
- * - Convert Alpha Result into User Result
+ * - Convert Session Result into User Result
  */
 
 (function (global) {
@@ -16,49 +16,78 @@
     function generate(input) {
 
 
-        var growth =
-            input.growth || {};
+        var session =
+            input.session || {};
 
 
-        var reflection =
-            input.reflection || {};
+
+        var latest =
+            session.latestResult || {};
+
+
+
+        var sourceResult =
+            latest.result || {};
+
 
 
         return global.PacemakerResultModel.create({
 
+
             experience:
-                input.experience || null,
+
+                input.experience || "result",
+
 
 
             title:
+
+                sourceResult.title ||
+
                 "Growth Result",
 
 
+
             summary:
-                reflection.summary ||
-                "Your growth process has been completed.",
+
+                sourceResult.summary ||
+
+                "오늘의 실행 과정을 정리했습니다.",
+
 
 
             nextStep:
-                growth.direction === "continue"
-                    ? "Continue next growth step."
-                    : "Review current step.",
+
+                sourceResult.nextStep ||
+
+                "다음 단계를 이어갑니다.",
+
 
 
             status:
+
+                sourceResult.status ||
+
                 "completed"
 
+
         });
+
 
     }
 
 
+
     global.PacemakerResultGenerator = {
 
+
         generate:
+
             generate
 
+
     };
+
 
 
 }(window));

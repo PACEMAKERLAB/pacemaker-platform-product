@@ -2,7 +2,7 @@
  * PACEMAKER Platform
  * Experience Navigation Runtime
  *
- * Version 1.1.0
+ * Version 1.2.0
  */
 
 (function(global){
@@ -17,6 +17,13 @@
             input.experience;
 
 
+        console.log(
+            "Navigation Input:",
+            experience
+        );
+
+
+
         var model =
             global.PacemakerNavigationModel.create({
 
@@ -26,53 +33,62 @@
             });
 
 
+
+        console.log(
+            "Navigation Model:",
+            model
+        );
+
+
+
         var route =
             global.PacemakerNavigationController.resolve(
                 model.experience
             );
 
 
+
+        console.log(
+            "Navigation Route:",
+            route
+        );
+
+
+
         model.route =
             route;
 
 
+
         return {
 
-            navigation:
-                model
+    navigation:
+        model,
 
-        };
+    execute:
 
+        global.PacemakerNavigationExecutor
+        ? 
+        global.PacemakerNavigationExecutor.go
+        : null
 
-    }
-
-
-    function fromFlow(flowResult){
-
-
-        return execute({
-
-            experience:
-                flowResult.next
-
-        });
+};
 
 
     }
+
 
 
     global.PacemakerNavigationRuntime = {
 
 
         execute:
-            execute,
 
-
-        fromFlow:
-            fromFlow
+            execute
 
 
     };
+
 
 
 }(window));
