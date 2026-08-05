@@ -125,6 +125,19 @@
 
             });
 
+        var result =
+    global.PacemakerResultRuntime.execute({
+
+        experience:
+            input.experience || null,
+
+        reflection:
+            reflection,
+
+        growth:
+            growth
+
+    });
 
         return {
 
@@ -157,6 +170,9 @@
 
             growth:
                 growth,
+
+            result:
+                result,    
 
             ready:
                 true
