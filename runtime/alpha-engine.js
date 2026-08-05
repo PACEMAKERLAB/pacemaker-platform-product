@@ -2,13 +2,14 @@
  * PACEMAKER Platform
  * Alpha Engine
  *
- * Version 1.3.0
+ * Version 1.4.0
  *
  * Responsibility
  * - Execute Alpha Layer
  * - Create Context
  * - Create Memory
  * - Analyze Intelligence
+ * - Generate Recommendation
  */
 
 (function (global) {
@@ -61,13 +62,25 @@
             });
 
 
+        var recommendation =
+            global.PacemakerRecommendationRuntime.recommend({
+
+                experience:
+                    input.experience || null,
+
+                intelligence:
+                    intelligence
+
+            });
+
+
         return {
 
             engine:
                 "alpha",
 
             version:
-                "1.3.0",
+                "1.4.0",
 
             context:
                 context,
@@ -77,6 +90,9 @@
 
             intelligence:
                 intelligence,
+
+            recommendation:
+                recommendation,
 
             ready:
                 true
