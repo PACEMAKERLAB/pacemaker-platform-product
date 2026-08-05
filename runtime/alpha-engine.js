@@ -2,12 +2,7 @@
  * PACEMAKER Platform
  * Alpha Engine
  *
- * Version 1.0.0
- *
- * 역할
- * - Platform Runtime 보조 Layer
- * - Context 준비
- * - Experience 실행 전 환경 생성
+ * Version 1.1.0
  */
 
 (function (global) {
@@ -27,23 +22,25 @@
         }
 
 
+        var context =
+            global.PacemakerContextRuntime.create({
+
+                experience:
+                    input.experience || null
+
+            });
+
+
         return {
 
             engine:
                 "alpha",
 
             version:
-                "1.0.0",
+                "1.1.0",
 
-            context: {
-
-                experience:
-                    input.experience || null,
-
-                timestamp:
-                    new Date().toISOString()
-
-            },
+            context:
+                context,
 
             ready:
                 true
@@ -61,4 +58,4 @@
     };
 
 
-}(this));
+}(window));
