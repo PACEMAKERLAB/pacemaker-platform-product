@@ -2,12 +2,13 @@
  * PACEMAKER Platform
  * Alpha Engine
  *
- * Version 1.2.0
+ * Version 1.3.0
  *
  * Responsibility
  * - Execute Alpha Layer
  * - Create Context
- * - Create Memory Record
+ * - Create Memory
+ * - Analyze Intelligence
  */
 
 (function (global) {
@@ -51,19 +52,31 @@
             });
 
 
+        var intelligence =
+            global.PacemakerIntelligenceRuntime.analyze({
+
+                experience:
+                    input.experience || null
+
+            });
+
+
         return {
 
             engine:
                 "alpha",
 
             version:
-                "1.2.0",
+                "1.3.0",
 
             context:
                 context,
 
             memory:
                 memory,
+
+            intelligence:
+                intelligence,
 
             ready:
                 true
