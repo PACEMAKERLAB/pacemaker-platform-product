@@ -312,3 +312,31 @@ Next Growth
 
 
 The system is designed to continuously improve through accumulated experience.
+
+# Experience Navigation Layer
+
+
+Responsibility:
+
+Experience Flow 결과를 받아
+다음 Experience Route를 결정한다.
+
+
+Flow:
+
+Experience Flow
+
+↓
+
+Experience Navigation
+
+↓
+
+Experience Page
+
+
+Navigation does not:
+
+- execute runtime
+- render UI
+- manage business logic
