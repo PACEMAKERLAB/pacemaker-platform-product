@@ -82,6 +82,12 @@
 <script src="runtime/11_result/result-renderer.js"></script>
 <script src="runtime/11_result/result-runtime.js"></script>
 
+<!-- Experience Flow -->
+
+<script src="runtime/experience-flow/flow-model.js"></script>
+<script src="runtime/experience-flow/flow-controller.js"></script>
+<script src="runtime/experience-flow/flow-runtime.js"></script>
+
 
 <!-- Experience Gateway -->
 
@@ -96,29 +102,6 @@
 <script src="runtime/platform-runtime.js"></script>
 
 <script>
-
-    var platformResult =
-PacemakerExperienceGatewayRuntime.execute({
-
-    experience:
-        "start",
-
-    stage:
-        "start",
-
-    userInput:
-    {
-        goal:
-            ""
-    }
-
-});
-
-
-    console.log(
-        "Platform Runtime",
-        platformResult
-    );
 
 
     
