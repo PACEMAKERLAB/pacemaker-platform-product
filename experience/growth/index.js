@@ -1,63 +1,48 @@
 /**
  * PACEMAKER Platform
  * Growth Experience
- * Runtime
+ *
+ * Entry
  * Version 1.0.0
  *
  * Responsibility
- * - Execute the Growth Experience flow.
+ * - Expose Growth Experience entry point
+ * - Connect Growth Runtime
  */
 
 (function (global) {
 
     "use strict";
 
+
     function execute(input) {
 
-        var model =
-            global.PacemakerGrowthModel.create(
-                input
+
+        if (
+            !global.PacemakerGrowthRuntime ||
+            typeof global.PacemakerGrowthRuntime.execute !== "function"
+        ) {
+
+            throw new Error(
+                "PACEMAKER Growth Experience: Runtime not found."
             );
 
-        var decision =
-            global.PacemakerGrowthDecision.execute(
-                model
-            );
+        }
 
-        var result =
-            global.PacemakerGrowthGenerator.generate(
-                decision,
-                model
-            );
 
-        var language =
-            global.PacemakerGrowthLanguage.create(
-                result
-            );
-
-        global.PacemakerGrowthRenderer.render(
-            language
+        return global.PacemakerGrowthRuntime.execute(
+            input || {}
         );
-
-        return {
-
-            status:
-                "completed",
-
-            result:
-                result,
-
-            nextStep:
-                null
-
-        };
 
     }
 
-    global.PacemakerGrowthRuntime = {
 
-        execute: execute
+    global.PacemakerGrowthExperience = {
+
+        execute:
+            execute
 
     };
+
 
 }(window));

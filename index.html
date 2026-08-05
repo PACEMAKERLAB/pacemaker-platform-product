@@ -25,8 +25,29 @@
 <script src="experience/growth/runtime.js"></script>
 <script src="experience/growth/index.js"></script>
 
+<script src="runtime/alpha-engine.js"></script>
+<script src="runtime/platform-runtime.js"></script>
+
 <script>
+
+    var platformResult =
+        PacemakerPlatformRuntime.execute({
+
+            experience:
+                "growth"
+
+        });
+
+
+    console.log(
+        "Platform Runtime",
+        platformResult
+    );
+
+
     PacemakerGrowthExperience.execute({});
+
+
 </script>
 
 </body>
