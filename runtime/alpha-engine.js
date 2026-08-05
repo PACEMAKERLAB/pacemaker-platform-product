@@ -2,7 +2,7 @@
  * PACEMAKER Platform
  * Alpha Engine
  *
- * Version 1.6.0
+ * Version 1.7.0
  *
  * Responsibility
  * - Execute Alpha Layer
@@ -12,6 +12,7 @@
  * - Generate Recommendation
  * - Create Action
  * - Execute Action
+ * - Reflect Execution
  */
 
 (function (global) {
@@ -100,13 +101,25 @@
             });
 
 
+        var reflection =
+            global.PacemakerReflectionRuntime.reflect({
+
+                experience:
+                    input.experience || null,
+
+                execution:
+                    execution
+
+            });
+
+
         return {
 
             engine:
                 "alpha",
 
             version:
-                "1.6.0",
+                "1.7.0",
 
             context:
                 context,
@@ -125,6 +138,9 @@
 
             execution:
                 execution,
+
+            reflection:
+                reflection,
 
             ready:
                 true
