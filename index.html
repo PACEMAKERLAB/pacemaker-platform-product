@@ -19,60 +19,78 @@
 
     <main id="pacemaker-result"></main>
 
-<script src="experience/growth/model.js"></script>
-<script src="experience/growth/decision.js"></script>
-<script src="experience/growth/generator.js"></script>
-<script src="experience/growth/language.js"></script>
-<script src="experience/growth/renderer.js"></script>
-<script src="experience/growth/runtime.js"></script>
-<script src="experience/growth/index.js"></script>
+<!-- Runtime Core -->
 
-<script src="runtime/context/context-model.js"></script>
-<script src="runtime/context/context-storage.js"></script>
-<script src="runtime/context/context-manager.js"></script>
-<script src="runtime/context/context-runtime.js"></script>
+<!-- Context -->
 
-<script src="runtime/memory/memory-model.js"></script>
-<script src="runtime/memory/memory-storage.js"></script>
-<script src="runtime/memory/memory-manager.js"></script>
-<script src="runtime/memory/memory-runtime.js"></script>
+<script src="runtime/01_context/context-model.js"></script>
+<script src="runtime/01_context/context-storage.js"></script>
+<script src="runtime/01_context/context-manager.js"></script>
+<script src="runtime/01_context/context-runtime.js"></script>
 
-<script src="runtime/intelligence/intelligence-model.js"></script>
-<script src="runtime/intelligence/intelligence-engine.js"></script>
-<script src="runtime/intelligence/intelligence-runtime.js"></script>
 
-<script src="runtime/recommendation/recommendation-model.js"></script>
-<script src="runtime/recommendation/recommendation-engine.js"></script>
-<script src="runtime/recommendation/recommendation-runtime.js"></script>
+<!-- Memory -->
 
-<script src="runtime/action/action-model.js"></script>
-<script src="runtime/action/action-engine.js"></script>
-<script src="runtime/action/action-runtime.js"></script>
+<script src="runtime/02_memory/memory-model.js"></script>
+<script src="runtime/02_memory/memory-storage.js"></script>
+<script src="runtime/02_memory/memory-manager.js"></script>
+<script src="runtime/02_memory/memory-runtime.js"></script>
 
-<script src="runtime/execution/execution-model.js"></script>
-<script src="runtime/execution/execution-engine.js"></script>
-<script src="runtime/execution/execution-runtime.js"></script>
 
-<script src="runtime/reflection/reflection-model.js"></script>
-<script src="runtime/reflection/reflection-engine.js"></script>
-<script src="runtime/reflection/reflection-runtime.js"></script>
+<script src="runtime/03_intelligence/intelligence-model.js"></script>
+<script src="runtime/03_intelligence/intelligence-engine.js"></script>
+<script src="runtime/03_intelligence/intelligence-runtime.js"></script>
 
-<script src="runtime/growth/growth-model.js"></script>
-<script src="runtime/growth/growth-engine.js"></script>
-<script src="runtime/growth/growth-runtime.js"></script>
 
-<script src="runtime/memory-update/memory-update-model.js"></script>
-<script src="runtime/memory-update/memory-update-engine.js"></script>
-<script src="runtime/memory-update/memory-update-runtime.js"></script>
+<script src="runtime/04_recommendation/recommendation-model.js"></script>
+<script src="runtime/04_recommendation/recommendation-engine.js"></script>
+<script src="runtime/04_recommendation/recommendation-runtime.js"></script>
 
-<script src="runtime/persistence/persistence-model.js"></script>
-<script src="runtime/persistence/persistence-engine.js"></script>
-<script src="runtime/persistence/persistence-runtime.js"></script>
 
-<script src="runtime/result/result-model.js"></script>
-<script src="runtime/result/result-generator.js"></script>
-<script src="runtime/result/result-renderer.js"></script>
-<script src="runtime/result/result-runtime.js"></script>
+<script src="runtime/05_action/action-model.js"></script>
+<script src="runtime/05_action/action-engine.js"></script>
+<script src="runtime/05_action/action-runtime.js"></script>
+
+
+<script src="runtime/06_execution/execution-model.js"></script>
+<script src="runtime/06_execution/execution-engine.js"></script>
+<script src="runtime/06_execution/execution-runtime.js"></script>
+
+
+<script src="runtime/07_reflection/reflection-model.js"></script>
+<script src="runtime/07_reflection/reflection-engine.js"></script>
+<script src="runtime/07_reflection/reflection-runtime.js"></script>
+
+
+<script src="runtime/08_growth/growth-model.js"></script>
+<script src="runtime/08_growth/growth-engine.js"></script>
+<script src="runtime/08_growth/growth-runtime.js"></script>
+
+
+<script src="runtime/09_memory-update/memory-update-model.js"></script>
+<script src="runtime/09_memory-update/memory-update-engine.js"></script>
+<script src="runtime/09_memory-update/memory-update-runtime.js"></script>
+
+
+<script src="runtime/10_persistence/persistence-model.js"></script>
+<script src="runtime/10_persistence/persistence-engine.js"></script>
+<script src="runtime/10_persistence/persistence-runtime.js"></script>
+
+
+<script src="runtime/11_result/result-model.js"></script>
+<script src="runtime/11_result/result-generator.js"></script>
+<script src="runtime/11_result/result-renderer.js"></script>
+<script src="runtime/11_result/result-runtime.js"></script>
+
+
+<!-- Experience Gateway -->
+
+<script src="runtime/experience-gateway/experience-gateway-model.js"></script>
+<script src="runtime/experience-gateway/experience-gateway-engine.js"></script>
+<script src="runtime/experience-gateway/experience-gateway-runtime.js"></script>
+
+
+<!-- Alpha -->
 
 <script src="runtime/alpha-engine.js"></script>
 <script src="runtime/platform-runtime.js"></script>
@@ -80,12 +98,21 @@
 <script>
 
     var platformResult =
-        PacemakerPlatformRuntime.execute({
+PacemakerExperienceGatewayRuntime.execute({
 
-            experience:
-                "growth"
+    experience:
+        "start",
 
-        });
+    stage:
+        "start",
+
+    userInput:
+    {
+        goal:
+            ""
+    }
+
+});
 
 
     console.log(
