@@ -125,19 +125,35 @@
 
             });
 
+        var memoryUpdate =
+            global.PacemakerMemoryUpdateRuntime.update({
+
+                experience:
+                    input.experience || null,
+
+                reflection:
+                    reflection,
+
+                growth:
+                    growth
+
+            });    
+
         var result =
-    global.PacemakerResultRuntime.execute({
+            global.PacemakerResultRuntime.execute({
 
-        experience:
-            input.experience || null,
+            experience:
+                input.experience || null,
 
-        reflection:
-            reflection,
+            reflection:
+                reflection,
 
-        growth:
-            growth
+            growth:
+                growth
 
-    });
+            });
+
+
 
         return {
 
@@ -170,6 +186,9 @@
 
             growth:
                 growth,
+
+            memoryUpdate:
+                memoryUpdate,    
 
             result:
                 result,    
