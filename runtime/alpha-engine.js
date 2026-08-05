@@ -2,7 +2,7 @@
  * PACEMAKER Platform
  * Alpha Engine
  *
- * Version 1.7.0
+ * Version 1.8.0
  *
  * Responsibility
  * - Execute Alpha Layer
@@ -13,6 +13,7 @@
  * - Create Action
  * - Execute Action
  * - Reflect Execution
+ * - Generate Growth
  */
 
 (function (global) {
@@ -113,13 +114,25 @@
             });
 
 
+        var growth =
+            global.PacemakerGrowthRuntime.grow({
+
+                experience:
+                    input.experience || null,
+
+                reflection:
+                    reflection
+
+            });
+
+
         return {
 
             engine:
                 "alpha",
 
             version:
-                "1.7.0",
+                "1.8.0",
 
             context:
                 context,
@@ -141,6 +154,9 @@
 
             reflection:
                 reflection,
+
+            growth:
+                growth,
 
             ready:
                 true
