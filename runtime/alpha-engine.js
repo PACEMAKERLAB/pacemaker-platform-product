@@ -2,234 +2,41 @@
  * PACEMAKER Platform
  * Alpha Engine
  *
- * Version 1.8.0
- *
- * Responsibility
- * - Execute Alpha Layer
- * - Create Context
- * - Create Memory
- * - Analyze Intelligence
- * - Generate Recommendation
- * - Create Action
- * - Execute Action
- * - Reflect Execution
- * - Generate Growth
+ * Sprint 186
  */
 
-(function (global) {
+(function(global){
 
-    "use strict";
+"use strict";
 
 
-    function execute(input) {
+function execute(input){
 
 
-        if (!input) {
+    return (
 
-            throw new Error(
-                "PACEMAKER Alpha Engine: input is required."
-            );
+        global
+        .PacemakerPlatformRuntime
+        .execute(
 
-        }
+            input
 
+        )
 
-        var context =
-            global.PacemakerContextRuntime.create({
+    );
 
-                experience:
-                    input.experience || null
 
-            });
+}
 
 
-        var memory =
-            global.PacemakerMemoryRuntime.create({
+global.PacemakerAlphaEngine = {
 
-                experience:
-                    input.experience || null,
 
-                type:
-                    "experience",
+    execute:
+        execute
 
-                data:
-                    context
 
-            });
-
-
-        var intelligence =
-            global.PacemakerIntelligenceRuntime.analyze({
-
-                experience:
-                    input.experience || null
-
-            });
-
-
-        var recommendation =
-            global.PacemakerRecommendationRuntime.recommend({
-
-                experience:
-                    input.experience || null,
-
-                intelligence:
-                    intelligence
-
-            });
-
-
-        var action =
-            global.PacemakerActionRuntime.create({
-
-                experience:
-                    input.experience || null,
-
-                recommendation:
-                    recommendation
-
-            });
-
-
-        var execution =
-            global.PacemakerExecutionRuntime.execute({
-
-                experience:
-                    input.experience || null,
-
-                action:
-                    action
-
-            });
-
-
-        var reflection =
-            global.PacemakerReflectionRuntime.reflect({
-
-                experience:
-                    input.experience || null,
-
-                execution:
-                    execution
-
-            });
-
-
-        var growth =
-            global.PacemakerGrowthRuntime.grow({
-
-                experience:
-                    input.experience || null,
-
-                reflection:
-                    reflection
-
-            });
-
-        var memoryUpdate =
-            global.PacemakerMemoryUpdateRuntime.update({
-
-                experience:
-                    input.experience || null,
-
-                reflection:
-                    reflection,
-
-                growth:
-                    growth
-
-            });    
-
-        var persistence =
-            global.PacemakerPersistenceRuntime.save({
-
-                experience:
-                    input.experience || null,
-
-                type:
-                    "growth",
-
-                learning:
-                    memoryUpdate.learning,
-
-                nextStep:
-                    memoryUpdate.nextStep,
-
-                data:
-                    memoryUpdate
-
-        });    
-
-        var result =
-            global.PacemakerResultRuntime.execute({
-
-            experience:
-                input.experience || null,
-
-            reflection:
-                reflection,
-
-            growth:
-                growth
-
-            });
-
-
-
-        return {
-
-            engine:
-                "alpha",
-
-            version:
-                "1.8.0",
-
-            context:
-                context,
-
-            memory:
-                memory,
-
-            intelligence:
-                intelligence,
-
-            recommendation:
-                recommendation,
-
-            action:
-                action,
-
-            execution:
-                execution,
-
-            reflection:
-                reflection,
-
-            growth:
-                growth,
-
-            memoryUpdate:
-                memoryUpdate,    
-
-            persistence:
-                persistence,    
-
-            result:
-                result,    
-
-            ready:
-                true
-
-        };
-
-    }
-
-
-    global.PacemakerAlphaEngine = {
-
-        execute:
-            execute
-
-    };
+};
 
 
 }(window));

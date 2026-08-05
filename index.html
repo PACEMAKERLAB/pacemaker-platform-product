@@ -94,6 +94,16 @@
 <script src="runtime/experience-navigation/navigation-controller.js"></script>
 <script src="runtime/experience-navigation/navigation-runtime.js"></script>
 
+<!-- Experience Runtime -->
+
+<script src="runtime/experience-runtime/runtime-registry.js"></script>
+<script src="runtime/experience-runtime/experience-mapping.js"></script>
+<script src="runtime/experience-runtime/runtime-resolver.js"></script>
+<script src="runtime/experience-runtime/runtime-executor.js"></script>
+<script src="runtime/experience-runtime/runtime-adapter.js"></script>
+<script src="runtime/experience-runtime/result-aggregator.js"></script>
+
+
 <!-- Experience Gateway -->
 
 <script src="runtime/experience-gateway/experience-gateway-model.js"></script>
@@ -108,7 +118,137 @@
 
 <script>
 
-   
+var runtimeTest =
+    PacemakerExperienceRuntimeResolver.resolve(
+        "growth"
+    );
+
+
+console.log(
+
+    "Experience Runtime Resolver Test",
+
+    runtimeTest
+
+);   
+
+var understandRuntime =
+    PacemakerExperienceRuntimeResolver.resolve(
+        "understand"
+    );
+
+
+console.log(
+
+    "Understand Runtime Test",
+
+    understandRuntime
+
+);
+
+var runtimePipeline =
+    PacemakerExperienceRuntimeResolver.resolve(
+        "growth"
+    );
+
+
+var executionResult =
+    PacemakerRuntimePipelineExecutor.execute(
+
+        runtimePipeline.runtime,
+
+        {
+            goal:
+                "growth test"
+        }
+
+    );
+
+
+console.log(
+
+    "Runtime Pipeline Executor Test",
+
+    executionResult
+
+);
+
+    
+    var growthRuntime =
+    PacemakerRuntimeAdapter.resolve(
+        "growth"
+    );
+
+
+console.log(
+
+    "Runtime Adapter Test",
+
+    growthRuntime
+
+);    
+
+var aggregatedResult =
+
+    PacemakerResultAggregator.aggregate(
+
+        "growth",
+
+        executionResult
+
+    );
+
+
+console.log(
+
+    "Result Aggregator Test",
+
+    aggregatedResult
+
+);
+
+var platformResult =
+
+    PacemakerPlatformRuntime.execute({
+
+        experience:
+            "growth",
+
+        goal:
+            "platform runtime test"
+
+    });
+
+
+
+console.log(
+
+    "Platform Runtime Final Test",
+
+    platformResult
+
+);
+
+var alphaResult =
+
+    PacemakerAlphaEngine.execute({
+
+        experience:
+            "growth",
+
+        goal:
+            "alpha test"
+
+    });
+
+
+console.log(
+
+    "Alpha Engine Final Test",
+
+    alphaResult
+
+);
 
 </script>
 
