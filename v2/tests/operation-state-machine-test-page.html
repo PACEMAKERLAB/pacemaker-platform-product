@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PACEMAKER v2 Operation State Machine Test</title>
+</head>
+<body>
+    <h1>PACEMAKER v2 Operation State Machine Test</h1>
+    <pre id="operation-state-machine-test-result">RUNNING</pre>
+
+    <script src="../runtime/pacemaker-v2-namespace.js"></script>
+    <script src="../operation/operation-schema.js"></script>
+    <script src="../operation/operation-model.js"></script>
+    <script src="../operation/operation-validator.js"></script>
+    <script src="../operation/operation-history-manager.js"></script>
+    <script src="../operation/operation-version-manager.js"></script>
+    <script src="../operation/operation-state-machine.js"></script>
+    <script src="operation-state-machine.test.js"></script>
+    <script>
+        (function () {
+            "use strict";
+
+            var output = document.getElementById("operation-state-machine-test-result");
+
+            try {
+                output.textContent = JSON.stringify(
+                    PacemakerV2OperationStateMachineTest.run(),
+                    null,
+                    2
+                );
+            } catch (error) {
+                output.textContent = "FAIL\n" + error.stack;
+                throw error;
+            }
+        }());
+    </script>
+</body>
+</html>
