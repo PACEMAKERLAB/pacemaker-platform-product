@@ -1,0 +1,80 @@
+# PACEMAKER Platform v2 Migration Plan
+
+**Version:** 1.0.0
+**Status:** BASELINE
+**Foundation:** PACEMAKER Foundation 2.0.0
+**Last Updated:** 2026-08-07
+
+## 1. Migration Goal
+
+기존 화면과 Growth Experience를 보존하면서,
+PACEMAKER의 핵심을 `AI 추천 → 전문가 확정 → Operation 기반 자동 도출` 구조로 전환한다.
+
+## 2. Preservation Matrix
+
+| 현재 영역 | 처리 | 이유 |
+|---|---|---|
+| `experience/` | 보존 | 기존 사용자 경험 자산 |
+| `runtime/01_context`~`11_result` | Legacy 보존 | 기존 Alpha Growth Loop |
+| `runtime/experience-*` | 보존 | 기존 화면 실행 연결 |
+| `protocols/community` | 참고 원본으로 보존 | 신규 Protocol Schema 전환 재료 |
+| `runtime/protocol` | 신규 구조로 단계적 교체 | 로딩·검증 책임 재정의 필요 |
+| `runtime/operation` | 신규 핵심으로 개편 | 확정 Operation과 버전 관리 필요 |
+| `runtime/document` | SourceAsset 경계로 개편 | 문서 분석과 원본 관리 분리 필요 |
+| `runtime/workflow` | DerivedWork Engine으로 개편 | 할 일 생성 규칙 명확화 필요 |
+
+## 3. New Target Modules
+
+```text
+product/
+experience/
+engine/
+  document-analysis/
+  protocol-recommendation/
+  operation-generation/
+  work-derivation/
+  impact-analysis/
+operation/
+protocol/
+connector/
+runtime/
+legacy/
+tests/
+```
+
+초기에는 실제 폴더 이동을 하지 않는다. 신규 모듈을 추가하고 Adapter로 연결한 후,
+테스트가 통과할 때 기존 모듈의 위치 변경 여부를 결정한다.
+
+## 4. First Vertical Slice Acceptance
+
+- 승인 사업계획서와 관련 자료를 SourceAsset으로 등록할 수 있다.
+- AI 분석 결과가 원문 근거와 함께 표시된다.
+- 추천 Protocol과 Draft Operation을 생성할 수 있다.
+- 전문가는 생애주기 전체를 한 화면 흐름에서 검토할 수 있다.
+- 전문가는 단계와 할 일을 추가·삭제·수정할 수 있다.
+- 확정 전 Draft와 확정 Operation이 명확히 구분된다.
+- 확정 시 Operation Version과 HistoryEvent가 생성된다.
+- 확정 Operation으로부터 할 일·일정·필요 문서·체크리스트가 생성된다.
+- 같은 입력과 같은 Operation Version은 같은 DerivedWork를 생성한다.
+- 기존 Growth Experience 테스트가 계속 동작한다.
+
+## 5. Commit Boundaries
+
+| 커밋 | 범위 |
+|---|---|
+| 1 | Foundation v2 Platform 문서 기준 확정 |
+| 2 | Operation Schema와 상태 전이 |
+| 3 | AI 분석·추천 계약과 샘플 데이터 |
+| 4 | 전문가 검토·확정 Experience |
+| 5 | DerivedWork 생성 및 수직 흐름 테스트 |
+
+## 6. Out of Scope for First Slice
+
+- 실제 Gmail·Google Calendar·Storage 인증 연동
+- OCR/PDF/범용 AI 자체 구현
+- 자동 승인
+- 완료 이력의 자동 삭제 또는 덮어쓰기
+- 학습 모델의 자동 재훈련
+- 고객 추천 사업과 신규 공고 매칭
+
+이 항목들은 첫 Operation 생성 흐름이 검증된 이후 Connector 또는 후속 Engine으로 진행한다.
