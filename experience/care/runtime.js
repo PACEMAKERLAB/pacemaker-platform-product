@@ -2,23 +2,24 @@
  * PACEMAKER Platform
  * Care Experience Runtime
  *
- * Version 1.0.0
+ * Version 1.1.0
  *
  * Responsibility
  * - Support user after result
  */
 
-(function(global){
+(function (global) {
 
     "use strict";
 
 
-    function execute(input){
+    function execute(input) {
 
+        input =
+            input || {};
 
         var session =
             input.session || {};
-
 
 
         var result = {
@@ -26,25 +27,16 @@
             experience:
                 "care",
 
-
             title:
                 "Care",
-
 
             message:
                 "현재 과정을 확인하고 다음 실행을 준비합니다.",
 
-
-            nextStep:
-                "continue",
-
-
             status:
                 "completed"
 
-
         };
-
 
 
         var target =
@@ -53,51 +45,69 @@
             );
 
 
-        if(target){
-
+        if (target) {
 
             target.innerHTML = `
 
-            <section>
+                <section>
 
-            <h1>
-            ${result.title}
-            </h1>
+                    <h1>
+                        ${result.title}
+                    </h1>
 
+                    <p>
+                        ${result.message}
+                    </p>
 
-            <p>
-            ${result.message}
-            </p>
+                    <strong>
+                        Status:
+                        ${result.status}
+                    </strong>
 
+                    <br><br>
 
-            <strong>
-            Status:
-            ${result.status}
-            </strong>
+                    <button
+                        id="care-continue"
+                        type="button"
+                    >
+                        CONTINUE
+                    </button>
 
-
-            </section>
+                </section>
 
             `;
 
         }
 
 
-
         return {
 
-            session:
-                session,
+    experience:
+        "care",
 
+    status:
+        "completed",
 
-            result:
-                result
+    session:
+        session,
 
-        };
+    result:
+        result,
 
+    nextStep: {
+
+        navigation: {
+
+            route:
+                "experience/continue/continue.html"
+
+        }
 
     }
 
+};
+
+    }
 
 
     global.PacemakerCareRuntime = {

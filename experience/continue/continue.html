@@ -28,13 +28,6 @@ PACEMAKER Continue Experience
 <script src="../../runtime/experience-session/session-query.js"></script>
 <script src="../../runtime/experience-session/continue-runtime.js"></script>
 
-<!-- Navigation -->
-
-<script src="../../runtime/experience-navigation/navigation-controller.js"></script>
-<script src="../../runtime/experience-navigation/navigation-model.js"></script>
-<script src="../../runtime/experience-navigation/navigation-executor.js"></script>
-<script src="../../runtime/experience-navigation/navigation-runtime.js"></script>
-
 <!-- Continue Experience -->
 
 <script src="runtime.js"></script>
@@ -43,30 +36,23 @@ PACEMAKER Continue Experience
 
 <script>
 
+var continueResult =
 
-var result =
+    PacemakerContinueExperience.start({
 
-    PacemakerNavigationRuntime.execute({
-
-        experience:"start"
+        source:
+            "care"
 
     });
 
 
-
 console.log(
-    result
-);
 
+    "Continue Result:",
 
-
-PacemakerNavigationExecutor.go(
-
-    result.navigation.route
+    continueResult
 
 );
-
-
 
 </script>
 

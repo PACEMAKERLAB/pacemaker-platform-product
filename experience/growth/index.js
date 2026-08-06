@@ -1,22 +1,14 @@
 /**
  * PACEMAKER Platform
- * Growth Experience
- *
- * Entry
+ * Growth Experience Index
  * Version 1.0.0
- *
- * Responsibility
- * - Expose Growth Experience entry point
- * - Connect Growth Runtime
  */
 
 (function (global) {
 
     "use strict";
 
-
-    function execute(input) {
-
+    function start(input) {
 
         if (
             !global.PacemakerGrowthRuntime ||
@@ -24,11 +16,10 @@
         ) {
 
             throw new Error(
-                "PACEMAKER Growth Experience: Runtime not found."
+                "PacemakerGrowthRuntime을 찾을 수 없습니다."
             );
 
         }
-
 
         return global.PacemakerGrowthRuntime.execute(
             input || {}
@@ -36,13 +27,10 @@
 
     }
 
-
     global.PacemakerGrowthExperience = {
 
-        execute:
-            execute
+        start: start
 
     };
-
 
 }(window));

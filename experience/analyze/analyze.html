@@ -50,7 +50,48 @@ PACEMAKER Analyze
 <script src="language.js"></script>
 <script src="renderer.js"></script>
 <script src="runtime.js"></script>
+<script src="index.js"></script>
 
+
+<script>
+
+    var analyzeResult =
+
+        PacemakerAnalyzeExperience.start({
+
+            source:
+                "understand"
+
+        });
+
+
+    console.log(
+
+        "Analyze Result:",
+
+        analyzeResult
+
+    );
+
+
+    if (
+        analyzeResult &&
+        analyzeResult.nextStep &&
+        analyzeResult.nextStep.navigation &&
+        analyzeResult.nextStep.navigation.route
+    ) {
+
+        window.location.href =
+
+            "../../" +
+            analyzeResult
+                .nextStep
+                .navigation
+                .route;
+
+    }
+
+</script>
 
 <script>
 

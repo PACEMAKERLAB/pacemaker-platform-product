@@ -18,7 +18,6 @@ PACEMAKER Care Experience
 <div id="pacemaker-care"></div>
 
 
-
 <!-- Session -->
 
 <script src="../../runtime/experience-session/session-model.js"></script>
@@ -28,12 +27,77 @@ PACEMAKER Care Experience
 <script src="../../runtime/experience-session/session-query.js"></script>
 
 
-
 <!-- Care Runtime -->
 
 <script src="runtime.js"></script>
 <script src="index.js"></script>
 
+
+<script>
+
+var careResult =
+
+    PacemakerCareExperience.start({
+
+        source:
+            "result",
+
+        session:
+            window.PacemakerExperienceSessionQuery &&
+            typeof window.PacemakerExperienceSessionQuery.latest ===
+                "function"
+                ? window.PacemakerExperienceSessionQuery.latest()
+                : null
+
+    });
+
+
+console.log(
+
+    "Care Result:",
+
+    careResult
+
+);
+
+
+var continueButton =
+    document.getElementById(
+        "care-continue"
+    );
+
+
+console.log(
+    "Care Next Route:",
+    careResult.nextStep.navigation.route
+);
+
+
+if (continueButton) {
+
+    continueButton.addEventListener(
+
+        "click",
+
+        function () {
+
+            console.log(
+                "Care Click Route:",
+                careResult.nextStep.navigation.route
+            );
+
+            window.location.href =
+
+                "../../" +
+                careResult.nextStep.navigation.route;
+
+        }
+
+    );
+
+}
+
+</script>
 
 
 </body>

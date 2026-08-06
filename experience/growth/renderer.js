@@ -55,10 +55,10 @@
             "button";
 
         button.id =
-            "growth-finish-button";
+            "growth-continue";
 
         button.textContent =
-            language.button || "";
+            language.button || "CONTINUE";
 
         root.appendChild(title);
         root.appendChild(message);

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        PACEMAKER Action Experience
+    </title>
+
+</head>
+
+<body>
+
+    <div id="action-experience"></div>
+
+
+    <script src="model.js"></script>
+    <script src="decision.js"></script>
+    <script src="generator.js"></script>
+    <script src="language.js"></script>
+    <script src="renderer.js"></script>
+    <script src="runtime.js"></script>
+    <script src="index.js"></script>
+
+
+    <script>
+
+    var actionResult =
+
+        PacemakerActionExperience.start({
+
+            source:
+                "recommendation"
+
+        });
+
+
+    console.log(
+
+        "Action Result:",
+
+        actionResult
+
+    );
+
+
+    var continueButton =
+
+        document.getElementById(
+            "action-continue"
+        );
+
+
+    if (continueButton) {
+
+        continueButton.addEventListener(
+
+            "click",
+
+            function () {
+
+                if (
+                    !actionResult ||
+                    !actionResult.nextStep ||
+                    !actionResult.nextStep.navigation ||
+                    !actionResult.nextStep.navigation.route
+                ) {
+
+                    console.error(
+                        "Action nextStep route를 찾을 수 없습니다."
+                    );
+
+                    return;
+
+                }
+
+                window.location.href =
+
+                    "../../" +
+                    actionResult
+                        .nextStep
+                        .navigation
+                        .route;
+
+            }
+
+        );
+
+    }
+
+</script>
+
+</body>
+
+</html>

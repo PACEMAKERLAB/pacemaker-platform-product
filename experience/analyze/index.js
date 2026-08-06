@@ -1,28 +1,35 @@
 /**
  * PACEMAKER Platform
- * Analyze Experience
- * Entry
+ * Analyze Experience Index
  * Version 1.0.0
- *
- * Responsibility
- * - Official entry point of the Analyze Experience.
  */
 
 (function (global) {
 
     "use strict";
 
-    function execute(input) {
+    function start(input) {
 
-        return global
-            .PacemakerAnalyzeRuntime
-            .execute(input);
+        if (
+            !global.PacemakerAnalyzeRuntime ||
+            typeof global.PacemakerAnalyzeRuntime.execute !== "function"
+        ) {
+
+            throw new Error(
+                "PacemakerAnalyzeRuntime을 찾을 수 없습니다."
+            );
+
+        }
+
+        return global.PacemakerAnalyzeRuntime.execute(
+            input || {}
+        );
 
     }
 
     global.PacemakerAnalyzeExperience = {
 
-        execute: execute
+        start: start
 
     };
 

@@ -47,8 +47,16 @@
             result:
                 result,
 
-            nextStep:
-                null
+            nextStep: {
+
+    navigation: {
+
+        route:
+            "experience/interpretation/interpretation.html"
+
+    }
+
+}
 
         };
 

@@ -1,24 +1,36 @@
-var session = null;
+/**
+ * PACEMAKER Platform
+ * Care Experience Index
+ * Version 1.0.0
+ */
 
+(function (global) {
 
-if(
-    window.PacemakerExperienceSessionQuery
-){
+    "use strict";
 
-    session =
-        PacemakerExperienceSessionQuery.latest();
+    function start(input) {
 
-}
+        if (
+            !global.PacemakerCareRuntime ||
+            typeof global.PacemakerCareRuntime.execute !== "function"
+        ) {
 
+            throw new Error(
+                "PacemakerCareRuntime을 찾을 수 없습니다."
+            );
 
+        }
 
-PacemakerCareRuntime.execute({
+        return global.PacemakerCareRuntime.execute(
+            input || {}
+        );
 
-    experience:
-        "care",
+    }
 
+    global.PacemakerCareExperience = {
 
-    session:
-        session
+        start: start
 
-});
+    };
+
+}(window));

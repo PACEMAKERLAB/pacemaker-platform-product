@@ -17,6 +17,13 @@ PACEMAKER Result Experience
 
 <div id="pacemaker-result"></div>
 
+<button
+    id="result-continue"
+    type="button"
+>
+    CONTINUE
+</button>
+
 
 <!-- Session -->
 
@@ -27,7 +34,7 @@ PACEMAKER Result Experience
 <script src="../../runtime/experience-session/session-query.js"></script>
 
 
-<!-- Result -->
+<!-- Result Core Runtime -->
 
 <script src="../../runtime/11_result/result-model.js"></script>
 <script src="../../runtime/11_result/result-generator.js"></script>
@@ -35,7 +42,7 @@ PACEMAKER Result Experience
 <script src="../../runtime/11_result/result-runtime.js"></script>
 
 
-<!-- Experience Result -->
+<!-- Result Experience -->
 
 <script src="runtime.js"></script>
 <script src="index.js"></script>
@@ -47,14 +54,18 @@ var session = null;
 
 
 if (
-    window.PacemakerExperienceSessionQuery
+    window.PacemakerExperienceSessionQuery &&
+    typeof window
+        .PacemakerExperienceSessionQuery
+        .latest === "function"
 ) {
 
     session =
-        PacemakerExperienceSessionQuery.latest();
+        window
+            .PacemakerExperienceSessionQuery
+            .latest();
 
 }
-
 
 
 var input = {
@@ -62,17 +73,75 @@ var input = {
     experience:
         "result",
 
+    source:
+        "growth",
+
     session:
         session
 
 };
 
 
+var resultExperience =
 
-PacemakerResultRuntime.execute(
-    input
+    PacemakerResultExperienceRuntime.execute(
+        input
+    );
+
+
+console.log(
+
+    "Result Experience:",
+
+    resultExperience
+
 );
 
+
+var continueButton =
+
+    document.getElementById(
+        "result-continue"
+    );
+
+
+if (continueButton) {
+
+    continueButton.addEventListener(
+
+        "click",
+
+        function () {
+
+            if (
+                !resultExperience ||
+                !resultExperience.nextStep ||
+                !resultExperience.nextStep.navigation ||
+                !resultExperience.nextStep.navigation.route
+            ) {
+
+                console.error(
+                    "Result nextStep route를 찾을 수 없습니다."
+                );
+
+                return;
+
+            }
+
+
+            window.location.href =
+
+                "../../" +
+                resultExperience
+                    .nextStep
+                    .navigation
+                    .route;
+
+        }
+
+    );
+
+}
 
 </script>
 

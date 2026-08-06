@@ -1,11 +1,7 @@
 /**
  * PACEMAKER Platform
- * Action Experience
- * Renderer
- * Version 1.0.0
- *
- * Responsibility
- * - Render the Action Experience language.
+ * Action Renderer
+ * Version 1.0.1
  */
 
 (function (global) {
@@ -17,54 +13,34 @@
         language =
             language || {};
 
-        var root =
+        var app =
             document.getElementById(
                 "action-experience"
             );
 
-        if (!root) {
+        if (!app) {
 
-            return null;
+            return;
 
         }
 
-        root.innerHTML = "";
+        app.innerHTML =
 
-        var title =
-            document.createElement(
-                "h1"
-            );
+            "<h1>" +
+            (language.title || "Action") +
+            "</h1>" +
 
-        title.textContent =
-            language.title || "";
+            "<p>" +
+            (
+                language.message ||
+                language.description ||
+                ""
+            ) +
+            "</p>" +
 
-        var message =
-            document.createElement(
-                "p"
-            );
-
-        message.textContent =
-            language.message || "";
-
-        var button =
-            document.createElement(
-                "button"
-            );
-
-        button.type =
-            "button";
-
-        button.id =
-            "action-continue-button";
-
-        button.textContent =
-            language.button || "";
-
-        root.appendChild(title);
-        root.appendChild(message);
-        root.appendChild(button);
-
-        return root;
+            "<button id=\"action-continue\" type=\"button\">" +
+            (language.button || "CONTINUE") +
+            "</button>";
 
     }
 

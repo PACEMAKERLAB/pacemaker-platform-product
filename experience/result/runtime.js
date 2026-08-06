@@ -9,13 +9,12 @@
  * - Connect Result Experience and Result Runtime
  */
 
-(function(global){
+(function (global) {
 
     "use strict";
 
 
-    function execute(input){
-
+    function execute(input) {
 
         var result =
 
@@ -26,34 +25,42 @@
             );
 
 
-
         return {
-
 
             experience:
 
                 "result",
 
+            status:
+
+                "completed",
 
             result:
 
-                result
+                result,
 
+            nextStep: {
+
+                navigation: {
+
+                    route:
+
+                        "experience/care/care.html"
+
+                }
+
+            }
 
         };
-
 
     }
 
 
-
     global.PacemakerResultExperienceRuntime = {
-
 
         execute:
 
             execute
-
 
     };
 

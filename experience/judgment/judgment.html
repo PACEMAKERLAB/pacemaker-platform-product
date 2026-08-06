@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+PACEMAKER Judgment Experience
+</title>
+
+</head>
+
+<body>
+
+<div id="judgment-experience"></div>
+
+<script src="model.js"></script>
+<script src="decision.js"></script>
+<script src="generator.js"></script>
+<script src="language.js"></script>
+<script src="renderer.js"></script>
+<script src="runtime.js"></script>
+<script src="index.js"></script>
+
+<script>
+
+    var judgmentResult =
+
+        PacemakerJudgmentExperience.start({
+
+            source:
+                "interpretation"
+
+        });
+
+    console.log(
+
+        "Judgment Result:",
+
+        judgmentResult
+
+    );
+
+    if (
+    judgmentResult &&
+    judgmentResult.nextStep &&
+    judgmentResult.nextStep.navigation &&
+    judgmentResult.nextStep.navigation.route
+) {
+
+    window.location.href =
+
+        "../../" +
+        judgmentResult.nextStep.navigation.route;
+
+}
+
+</script>
+
+</body>
+
+</html>

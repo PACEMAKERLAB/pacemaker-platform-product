@@ -1,28 +1,35 @@
 /**
  * PACEMAKER Platform
- * Action Experience
- * Entry
+ * Action Experience Index
  * Version 1.0.0
- *
- * Responsibility
- * - Official entry point of the Action Experience.
  */
 
 (function (global) {
 
     "use strict";
 
-    function execute(input) {
+    function start(input) {
 
-        return global
-            .PacemakerActionRuntime
-            .execute(input);
+        if (
+            !global.PacemakerActionRuntime ||
+            typeof global.PacemakerActionRuntime.execute !== "function"
+        ) {
+
+            throw new Error(
+                "PacemakerActionRuntime을 찾을 수 없습니다."
+            );
+
+        }
+
+        return global.PacemakerActionRuntime.execute(
+            input || {}
+        );
 
     }
 
     global.PacemakerActionExperience = {
 
-        execute: execute
+        start: start
 
     };
 

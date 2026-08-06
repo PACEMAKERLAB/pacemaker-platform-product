@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        PACEMAKER Growth Experience
+    </title>
+
+</head>
+
+<body>
+
+    <div id="growth-experience"></div>
+
+
+    <script src="model.js"></script>
+    <script src="decision.js"></script>
+    <script src="generator.js"></script>
+    <script src="language.js"></script>
+    <script src="renderer.js"></script>
+    <script src="runtime.js"></script>
+    <script src="index.js"></script>
+
+
+    <script>
+
+        var growthResult =
+
+            PacemakerGrowthExperience.start({
+
+                source:
+                    "action"
+
+            });
+
+
+        console.log(
+
+            "Growth Result:",
+
+            growthResult
+
+        );
+
+
+        var continueButton =
+
+            document.getElementById(
+                "growth-continue"
+            );
+
+
+        if (continueButton) {
+
+            continueButton.addEventListener(
+
+                "click",
+
+                function () {
+
+                    if (
+                        !growthResult ||
+                        !growthResult.nextStep ||
+                        !growthResult.nextStep.navigation ||
+                        !growthResult.nextStep.navigation.route
+                    ) {
+
+                        console.error(
+                            "Growth nextStep route를 찾을 수 없습니다."
+                        );
+
+                        return;
+
+                    }
+
+                    window.location.href =
+
+                        "../../" +
+                        growthResult
+                            .nextStep
+                            .navigation
+                            .route;
+
+                }
+
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -28,7 +28,15 @@
 
         analyze:
 
-            "experience/analyze/analyze.html",    
+            "experience/analyze/analyze.html", 
+            
+        interpretation:
+
+            "experience/interpretation/interpretation.html",
+            
+        recommendation:
+
+            "experience/recommendation/recommendation.html",    
             
 
         reflection:
