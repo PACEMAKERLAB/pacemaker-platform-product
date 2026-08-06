@@ -1,82 +1,121 @@
 /**
  * PACEMAKER Platform
  * Continue Experience Runtime
+ *
  * Version 1.0.0
+ *
+ * Responsibility
+ * - Resume previous Experience
  */
 
-(function (global) {
+(function(global){
 
     "use strict";
 
-    function execute(input) {
 
-        input =
-            input || {};
+    function execute(){
 
-        var result = {
 
-            experience:
-                "continue",
+        var state =
+            global
+            .PacemakerExperienceContinueRuntime
+            .resume();
 
-            title:
-                "Continue",
 
-            message:
-                "오늘의 과정을 마쳤습니다. 다음 여정에서 다시 이어갑니다.",
-
-            status:
-                "completed"
-
-        };
 
         var target =
             document.getElementById(
                 "pacemaker-continue"
             );
 
-        if (target) {
 
-            target.innerHTML =
 
-                "<section>" +
+        if(target){
 
-                    "<h1>" +
-                        result.title +
-                    "</h1>" +
 
-                    "<p>" +
-                        result.message +
-                    "</p>" +
+            if(state.available){
 
-                    "<strong>" +
-                        "Status: " +
-                        result.status +
-                    "</strong>" +
 
-                "</section>";
+                target.innerHTML = `
+
+
+                <section>
+
+
+                <h1>
+                Continue
+                </h1>
+
+
+                <p>
+                이전 실행 과정을 이어갈 수 있습니다.
+                </p>
+
+
+                <p>
+                Current Stage:
+                ${state.currentStage}
+                </p>
+
+
+                <strong>
+                Ready
+                </strong>
+
+
+                </section>
+
+
+                `;
+
+
+            } else {
+
+
+                target.innerHTML = `
+
+
+                <section>
+
+                <h1>
+                Continue
+                </h1>
+
+
+                <p>
+                이어갈 실행 기록이 없습니다.
+                </p>
+
+
+                </section>
+
+
+                `;
+
+
+            }
+
 
         }
 
-        return {
 
-            experience:
-                "continue",
 
-            status:
-                "completed",
+        return state;
 
-            result:
-                result
-
-        };
 
     }
 
+
+
     global.PacemakerContinueRuntime = {
+
 
         execute:
             execute
 
+
     };
+
+
 
 }(window));
