@@ -80,6 +80,7 @@
                 {
                     unitProjectId: "UNT-001",
                     title: "마을 소식지",
+                    unitProjectType: "publishing",
                     plannedCount: 3,
                     occurrenceDates: ["2026-07-31", "2026-08-31"],
                     preparationTasks: [
@@ -91,6 +92,7 @@
                 {
                     unitProjectId: "UNT-002",
                     title: "소통활동",
+                    unitProjectType: "communication",
                     plannedCount: 12,
                     occurrenceDates: ["2026-06-20", "2026-07-18"],
                     preparationTasks: [
@@ -98,11 +100,26 @@
                         { taskCode: "prepare-attendance", title: "참석자 서명부 준비" },
                         { taskCode: "prepare-photo", title: "활동 사진 촬영 담당 확인" }
                     ],
-                    requiredDocumentTypes: ["attendance", "photo", "expense-resolution"]
+                    requiredDocumentTypes: ["attendance", "photo", "expense-resolution"],
+                    occurrenceProfiles: [
+                        { round: 1, deliveryMode: "external_instructor", expenseTypes: ["instructor_fee"] },
+                        { round: 2, deliveryMode: "external_instructor", expenseTypes: ["instructor_fee"] },
+                        { round: 3, deliveryMode: "external_instructor", expenseTypes: ["instructor_fee"] },
+                        { round: 4, deliveryMode: "external_instructor", expenseTypes: ["instructor_fee"] },
+                        { round: 5, deliveryMode: "external_instructor", expenseTypes: ["instructor_fee"] },
+                        { round: 6, deliveryMode: "external_instructor", expenseTypes: ["instructor_fee"] },
+                        { round: 7, deliveryMode: "external_instructor", expenseTypes: ["instructor_fee"] },
+                        { round: 8, deliveryMode: "external_instructor", expenseTypes: ["instructor_fee"] },
+                        { round: 9, deliveryMode: "self_activity", expenseTypes: [] },
+                        { round: 10, deliveryMode: "self_activity", expenseTypes: [] },
+                        { round: 11, deliveryMode: "self_activity", expenseTypes: [] },
+                        { round: 12, deliveryMode: "self_activity", expenseTypes: [] }
+                    ]
                 },
                 {
                     unitProjectId: "UNT-003",
                     title: "성과공유회",
+                    unitProjectType: "event",
                     plannedCount: 1,
                     occurrenceDates: ["2026-11-15"],
                     preparationTasks: [
