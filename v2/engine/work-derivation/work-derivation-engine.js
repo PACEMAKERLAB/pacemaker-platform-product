@@ -48,7 +48,7 @@
             var dates = unitProject.occurrenceDates || [];
             var preparationTasks = unitProject.preparationTasks || [];
             var applicableEvidence = (operation.requiredDocuments || []).filter(function (requirement) {
-                return requirement.required !== false && (requirement.unitProjectId === "all" || requirement.unitProjectId === unitProject.unitProjectId);
+                return requirement.unitProjectId === "all" || requirement.unitProjectId === unitProject.unitProjectId;
             });
             var requiredDocumentTypes = Array.from(new Set((unitProject.requiredDocumentTypes || []).concat(applicableEvidence.map(function (requirement) { return requirement.documentType; }))));
             var round;
@@ -102,9 +102,15 @@
 
                 requiredDocumentTypes.forEach(function (documentType) {
                     var document = documents[documentType];
-                    var evidenceRule = applicableEvidence.find(function (requirement) { return requirement.documentType === documentType; });
+                    var evidenceRule = applicableEvidence.filter(function (requirement) {
+                        return requirement.documentType === documentType;
+                    }).sort(function (left, right) {
+                        return (right.unitProjectId === unitProject.unitProjectId ? 1 : 0) -
+                            (left.unitProjectId === unitProject.unitProjectId ? 1 : 0);
+                    })[0];
                     var scopedRounds = evidenceRule && String(evidenceRule.occurrenceScope || "all").split(",").map(function (value) { return value.trim(); });
-                    if (evidenceRule && scopedRounds.indexOf("all") < 0 && scopedRounds.indexOf(String(round)) < 0 && (unitProject.requiredDocumentTypes || []).indexOf(documentType) < 0) { return; }
+                    if (evidenceRule && evidenceRule.required === false) { return; }
+                    if (evidenceRule && scopedRounds.indexOf("all") < 0 && scopedRounds.indexOf(String(round)) < 0) { return; }
                     var requirementId = createId("DOC", [operation.operationId, operation.currentVersion, occurrenceId, documentType]);
 
                     output.documentRequirements.push({
@@ -113,9 +119,15 @@
                         occurrenceId: occurrenceId,
                         documentType: documentType,
                         title: document ? document.title : documentType,
+                        required: evidenceRule ? evidenceRule.required !== false : document ? document.required !== false : true,
+                        purpose: evidenceRule ? evidenceRule.purpose || "" : document ? document.purpose || "" : "",
+                        unitProjectScope: evidenceRule ? evidenceRule.unitProjectId : unitProject.unitProjectId,
+                        occurrenceScope: evidenceRule ? evidenceRule.occurrenceScope || "all" : "all",
                         evidenceRequirementId: evidenceRule ? evidenceRule.documentType : null,
                         categoryId: evidenceRule ? evidenceRule.categoryId : "all",
-                        botameSubmission: evidenceRule ? evidenceRule.botameSubmission : false,
+                        botameSubmission: evidenceRule ? evidenceRule.botameSubmission : document ? document.botameSubmission === true : false,
+                        templateAssetId: evidenceRule ? evidenceRule.templateAssetId || null : document ? document.templateAssetId || null : null,
+                        source: evidenceRule ? evidenceRule.source || "operation_confirmed" : document ? document.source || "unit_project_default" : "unit_project_default",
                         status: "missing",
                         attachmentIds: []
                     });

@@ -3060,9 +3060,11 @@ button {
 .document-round-meta .status-badge { grid-column:1/-1; justify-self:start; }
 .document-chip-list { display:flex; flex-wrap:wrap; gap:7px; }
 .document-chip { min-width:112px; padding:9px 10px; border:1px solid #e0e6ed; border-radius:9px; background:#f8fafc; }
-.document-chip strong,.document-chip small { display:block; }
+.document-chip strong,.document-chip small,.document-chip em,.document-chip i { display:block; }
 .document-chip strong { font-size:11px; }
 .document-chip small { margin-top:4px; color:#7c8899; font-size:10px; }
+.document-chip em { margin-top:5px; color:#66758a; font-size:9px; font-style:normal; }
+.document-chip i { margin-top:4px; color:#235a85; font-size:9px; font-style:normal; font-weight:750; }
 .document-chip--attached { border-color:#a9d9c5; background:#f1faf6; }
 .document-chip--attached small { color:#18704e; }
 .document-chip--missing { border-color:#efb4ad; background:#fff5f3; }

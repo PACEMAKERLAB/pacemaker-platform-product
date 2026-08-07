@@ -13,7 +13,7 @@ var documents=derivedWork.documentRequirements.filter(function(item){return item
 var stored=executionState.documentStatus[key(requirement)];
 var review=(executionState.documentReviewStatus||{})[key(requirement)];
 var workflow=(executionState.documentWorkflowStatus||{})[key(requirement)];
-return {documentRequirementId:requirement.documentRequirementId,documentType:requirement.documentType,title:requirement.title,reviewStatus:review||null,workflowStatus:workflow||null,status:review==="rejected"?"rejected":stored==="attached"?"attached":round<=completed?"missing":"planned"};
+return {documentRequirementId:requirement.documentRequirementId,documentType:requirement.documentType,title:requirement.title,required:requirement.required!==false,purpose:requirement.purpose||"",unitProjectScope:requirement.unitProjectScope||unit.unitProjectId,occurrenceScope:requirement.occurrenceScope||"all",categoryId:requirement.categoryId||"all",botameSubmission:requirement.botameSubmission===true,templateAssetId:requirement.templateAssetId||null,source:requirement.source||"unit_project_default",reviewStatus:review||null,workflowStatus:workflow||null,status:review==="rejected"?"rejected":stored==="attached"?"attached":round<=completed?"missing":"planned"};
 });
 occurrences.push({occurrenceId:occurrenceId,round:round,scheduledDate:schedule?schedule.scheduledDate:null,executionStatus:round<=completed?"completed":schedule?"scheduled":"planning_required",documents:documents,attachedCount:documents.filter(function(item){return item.status==="attached";}).length,missingCount:documents.filter(function(item){return item.status==="missing";}).length});
 }

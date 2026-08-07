@@ -240,7 +240,9 @@
         var attachedLabel = document.workflowStatus === "evidence_completed" ? "증빙 완료" : document.workflowStatus === "botame_ready" ? "보탬e 등록 준비" : document.reviewStatus === "approved" ? "사전검토 완료" : "등록됨";
         var label = { attached: attachedLabel, missing: "누락", planned: "준비 예정", rejected: "보완 필요" }[document.status];
         return '<span class="document-chip document-chip--' + document.status + '"><strong>' + escapeHtml(document.title) +
-            '</strong><small>' + label + '</small></span>';
+            '</strong><small>' + label + '</small><em>' + escapeHtml(document.purpose || "운영 증빙") + '</em><i>' +
+            (document.workflowStatus === "botame_ready" ? "보탬e 제출자료 생성 완료" : document.botameSubmission ? "보탬e 제출 대상" : "내부 보관") +
+            (document.templateAssetId ? " · 템플릿" : "") + '</i></span>';
     }
 
     function renderDocuments(view, state) {
@@ -282,7 +284,7 @@
                 return '<option value="' + unit.unitProjectId + '"' + (unit.unitProjectId === draft.unitProjectId ? " selected" : "") + '>' + escapeHtml(unit.title) + '</option>';
             }).join("") + '</select></label><label><span>회차</span><select data-mapping-field="occurrenceId">' + selectedUnit.occurrences.map(function (occurrence) {
                 return '<option value="' + occurrence.occurrenceId + '"' + (occurrence.occurrenceId === draft.occurrenceId ? " selected" : "") + '>' + occurrence.round + '회 · ' + escapeHtml(occurrence.scheduledDate || "일정 미등록") + '</option>';
-            }).join("") + '</select></label><label><span>문서유형</span><select data-mapping-field="documentType">' + selectedUnit.occurrences[0].documents.map(function (document) {
+            }).join("") + '</select></label><label><span>문서유형</span><select data-mapping-field="documentType">' + ((selectedUnit.occurrences.find(function (occurrence) { return occurrence.occurrenceId === draft.occurrenceId; }) || selectedUnit.occurrences[0]).documents).map(function (document) {
                 return '<option value="' + document.documentType + '"' + (document.documentType === draft.documentType ? " selected" : "") + '>' + escapeHtml(document.title) + '</option>';
             }).join("") + '</select></label></div><div class="mapping-trace"><span>사업</span><strong>함께머묾</strong><b>→</b><span>단위사업·회차</span><strong>' +
             escapeHtml(selectedUnit.title) + '</strong><b>→</b><span>자료 상태</span><strong>확인 후 첨부</strong></div><footer><button class="secondary-button" data-action="cancel-mapping">취소</button><button class="primary-button" data-action="confirm-mapping">매핑 확인·저장</button></footer></section></div>';

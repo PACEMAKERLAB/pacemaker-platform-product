@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>PACEMAKER Confirmed Document Evidence Derivation Test</title></head>
+<body>
+<h1>PACEMAKER v2 Confirmed Document + Evidence Derivation Test</h1>
+<pre id="result">RUNNING</pre>
+<script src="../runtime/pacemaker-v2-namespace.js"></script>
+<script src="../operation/operation-schema.js"></script>
+<script src="../operation/operation-model.js"></script>
+<script src="../engine/work-derivation/derived-work-model.js"></script>
+<script src="../engine/work-derivation/work-derivation-engine.js"></script>
+<script src="../runtime/derived-work-runtime.js"></script>
+<script src="community-operation-draft.fixture.js"></script>
+<script src="confirmed-document-evidence-derivation.test.js"></script>
+<script>
+(function () {
+    var output = document.getElementById("result");
+    try { output.textContent = JSON.stringify(PacemakerV2ConfirmedDocumentEvidenceDerivationTest.run(), null, 2); }
+    catch (error) { output.textContent = "FAIL\n" + error.stack; throw error; }
+}());
+</script>
+</body>
+</html>

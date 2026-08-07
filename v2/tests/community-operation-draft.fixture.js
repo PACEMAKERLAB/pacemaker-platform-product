@@ -137,10 +137,10 @@
                 ]
             },
             requiredDocuments: [
-                { documentType: "activity-plan", title: "활동 계획서" },
-                { documentType: "attendance", title: "참석자 서명부" },
-                { documentType: "photo", title: "활동 사진" },
-                { documentType: "expense-resolution", title: "지출결의서" }
+                { documentType: "activity-plan", title: "활동 계획서", required: true, purpose: "운영·예산 증빙", botameSubmission: true, source: "expert_confirmed" },
+                { documentType: "attendance", title: "참석자 서명부", required: true, purpose: "참여자·활동 증빙", botameSubmission: true, source: "expert_confirmed" },
+                { documentType: "photo", title: "활동 사진", required: true, purpose: "실행 결과 증빙", botameSubmission: true, source: "expert_confirmed" },
+                { documentType: "expense-resolution", title: "지출결의서", required: true, purpose: "예산 집행 증빙", botameSubmission: true, source: "expert_confirmed" }
             ],
             extractionEvidence: [
                 {
