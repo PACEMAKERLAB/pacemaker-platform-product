@@ -16,6 +16,7 @@
         var evidenceWork = global.PacemakerV2.Runtime.EvidenceWork.execute({
             derivedWork: derivedWork, executionState: executionState, reconciledAt: new Date().toISOString()
         });
+        var budgetState = JSON.parse(JSON.stringify(global.PacemakerV2CommunityBudgetStateFixture));
         var state = {
             activeTab: "개요",
             showHistory: false,
@@ -39,10 +40,19 @@
             }),
             approvalNotice: null,
             budgetMode: "unit",
-            budgetView: global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: global.PacemakerV2CommunityBudgetStateFixture })
+            budgetState: budgetState,
+            budgetDraft: null,
+            budgetNotice: null,
+            budgetView: global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: budgetState })
         };
 
         root.addEventListener("change", function (event) {
+            if (state.budgetDraft && event.target.dataset.budgetField) {
+                state.budgetDraft[event.target.dataset.budgetField] = event.target.type === "checkbox" ? event.target.checked : event.target.value;
+                if (event.target.dataset.budgetField === "unitProjectId") { state.budgetDraft.occurrenceNumber = "1"; }
+                experience.MyProject.Renderer.render(root, state);
+                return;
+            }
             if (!state.mappingDraft || !event.target.dataset.mappingField) { return; }
             state.mappingDraft[event.target.dataset.mappingField] = event.target.value;
             if (event.target.dataset.mappingField === "unitProjectId") {
@@ -58,6 +68,25 @@
             var action = event.target.closest("button[data-action]");
             if (tab) { state.activeTab = tab.dataset.tab; }
             if (action && action.dataset.action === "change-budget-view") { state.budgetMode = action.dataset.budgetView; }
+            if (action && action.dataset.action === "open-expense-resolution") {
+                state.budgetDraft = { unitProjectId: budgetState.unitProjects[0].unitProjectId, occurrenceNumber: "1", categoryId: budgetState.categories[0].categoryId, amount: "", status: "pending", evidenceAttached: false };
+                state.budgetNotice = null;
+            }
+            if (action && action.dataset.action === "cancel-expense-resolution") { state.budgetDraft = null; }
+            if (action && action.dataset.action === "save-expense-resolution" && state.budgetDraft) {
+                try {
+                    var expense = global.PacemakerV2.Product.Budget.ExpenseResolutionModel.create({
+                        expenseResolutionId: "EXP-" + Date.now(), unitProjectId: state.budgetDraft.unitProjectId,
+                        occurrenceId: state.budgetDraft.unitProjectId + "-R" + String(state.budgetDraft.occurrenceNumber).padStart(3, "0"),
+                        categoryId: state.budgetDraft.categoryId, amount: state.budgetDraft.amount, status: state.budgetDraft.status,
+                        evidenceAttached: state.budgetDraft.evidenceAttached, registeredAt: new Date().toISOString(), registeredBy: "USR-EXPERT-0001"
+                    });
+                    budgetState.expenseResolutions.push(expense);
+                    state.budgetView = global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: budgetState });
+                    state.budgetNotice = (expense.status === "approved" ? "승인된" : "확인 대기") + " 지출결의서를 등록했습니다.";
+                    state.budgetDraft = null;
+                } catch (error) { state.budgetNotice = error.message; }
+            }
             if (action && action.dataset.action === "toggle-history") {
                 state.showHistory = !state.showHistory;
             }
