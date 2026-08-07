@@ -329,9 +329,12 @@
         var readyPanel = readyExpenses.length ? '<section class="expense-review-panel botame-ready-panel"><header><div><span class="section-kicker">담당자 처리</span><h2>보탬e 등록 준비 완료 ' + readyExpenses.length + '건</h2></div></header>' + readyExpenses.map(function (item) {
             var unit = state.budgetState.unitProjects.find(function (candidate) { return candidate.unitProjectId === item.unitProjectId; }) || {};
             var submissionPackage = state.botameSubmissionPackages[item.expenseResolutionId];
+            var storageDownload = state.botameStorageDownloads[item.expenseResolutionId];
             var packageDescription = submissionPackage ? submissionPackage.files.length + '개 제출자료 목록 생성 완료 · 누락 ' + submissionPackage.manifest.missingFileCount + '건' : '제출자료 목록 생성 필요';
             return '<div class="expense-review-row"><div><strong>' + e(unit.title) + ' · 제출자료 생성 완료</strong><span>' + money(item.amount) + ' · ' + e(packageDescription) + '</span></div><div>' +
                 (submissionPackage ? '<button class="secondary-button" data-action="download-botame-manifest" data-expense-id="' + e(item.expenseResolutionId) + '">제출자료 목록 다운로드</button>' : '') +
+                (submissionPackage && !storageDownload ? '<button class="secondary-button" data-action="prepare-botame-storage-download" data-expense-id="' + e(item.expenseResolutionId) + '">Demo Connector ZIP 준비</button>' : '') +
+                (storageDownload ? '<a class="secondary-button connector-download-link" href="' + e(storageDownload.downloadUrl) + '" download="' + e(storageDownload.downloadFileName) + '">Connector 결과 다운로드</a>' : '') +
                 '<button class="primary-button" data-action="complete-botame-processing" data-expense-id="' + e(item.expenseResolutionId) + '">보탬e 처리 완료</button></div></div>';
         }).join('') + '</section>' : '';
         var cards = unitMode ? view.units.map(function (unit) {

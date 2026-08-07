@@ -46,6 +46,8 @@
             budgetDraft: null,
             expenseEvidenceReview: null,
             botameSubmissionPackages: {},
+            botameStorageDownloads: {},
+            storageConnector: global.PacemakerV2.Connector.Storage.BrowserDemoAdapter.create(),
             budgetNotice: null,
             budgetView: initialBudgetView
         };
@@ -73,7 +75,7 @@
             experience.MyProject.Renderer.render(root, state);
         });
 
-        root.addEventListener("click", function (event) {
+        root.addEventListener("click", async function (event) {
             var tab = event.target.closest("button[data-tab]");
             var action = event.target.closest("button[data-action]");
             if (tab) { state.activeTab = tab.dataset.tab; }
@@ -168,6 +170,24 @@
                     manifestLink.click();
                     URL.revokeObjectURL(manifestUrl);
                     state.budgetNotice = "보탬e 제출자료 목록을 다운로드했습니다. 실제 파일 묶음은 Storage Connector 연결 후 제공됩니다.";
+                }
+            }
+            if (action && action.dataset.action === "prepare-botame-storage-download") {
+                var storagePackage = state.botameSubmissionPackages[action.dataset.expenseId];
+                if (storagePackage) {
+                    try {
+                        var storageDownload = await global.PacemakerV2.Runtime.BotameSubmissionDownload.prepare({
+                            submissionPackage: storagePackage,
+                            storageConnector: state.storageConnector,
+                            requestedAt: new Date().toISOString(),
+                            requestedBy: "USR-CUSTOMER-0001",
+                            expiresAt: new Date(Date.now() + 86400000).toISOString(),
+                            historyEventId: "HST-BOTAME-ARCHIVE-" + Date.now()
+                        });
+                        state.botameStorageDownloads[action.dataset.expenseId] = storageDownload;
+                        versionState.historyEvents = versionState.historyEvents.concat([storageDownload.historyEvent]);
+                        state.budgetNotice = "Demo Storage Connector가 원본 조회·묶음 생성·다운로드 링크 발급을 완료했습니다.";
+                    } catch (error) { state.budgetNotice = error.message; }
                 }
             }
             if (action && action.dataset.action === "complete-botame-processing") {

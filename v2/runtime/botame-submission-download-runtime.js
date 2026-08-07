@@ -42,6 +42,7 @@
             archiveName: archive.archiveName,
             archiveReference: archive.archiveReference,
             downloadUrl: download.downloadUrl,
+            downloadFileName: download.downloadFileName || archive.archiveName,
             expiresAt: download.expiresAt,
             historyEvent: Object.freeze({
                 historyEventId: input.historyEventId,
