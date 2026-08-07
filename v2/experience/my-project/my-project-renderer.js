@@ -24,6 +24,8 @@
         return new Intl.NumberFormat("ko-KR").format(Number(value) || 0) + "원";
     }
 
+    function e(value) { return escapeHtml(value); }
+
     function date(value) {
         if (!value) { return "확인 필요"; }
         return value.replace(/-/g, ". ") + ".";
@@ -305,6 +307,36 @@
             '건</strong></div><div><span>반려·보완</span><strong>' + state.approvalRequests.filter(function (item) { return item.status === "rejected"; }).length + '건</strong></div></div>' +
             (state.approvalNotice ? '<div class="document-notice">' + escapeHtml(state.approvalNotice) + '</div>' : '') + '<div class="approval-list">' + cards + '</div></section>';
     }
+    function renderBudget(state) {
+        var view = state.budgetView;
+        var unitMode = state.budgetMode !== "category";
+        var cards = unitMode ? view.units.map(function (unit) {
+            var occurrences = unit.occurrences.length ? unit.occurrences.map(function (item) {
+                return '<li><strong>' + item.occurrenceNumber + '회차 · ' + e(item.categoryTitle) + '</strong><span>' + money(item.amount) +
+                    (item.evidenceAttached ? ' · 증빙 완료' : ' · 증빙 누락') + '</span></li>';
+            }).join('') : '<li class="budget-empty">승인된 지출결의서가 없습니다.</li>';
+            return '<article class="budget-unit-card"><header><div><span>단위사업 · 계획 ' + unit.plannedCount + '회</span><h2>' + e(unit.title) + '</h2></div>' +
+                (unit.missingEvidenceCount ? badge('증빙 누락 ' + unit.missingEvidenceCount + '건', 'danger') : badge('정상', 'success')) + '</header>' +
+                '<div class="budget-values"><span>계획예산 <strong>' + money(unit.approvedAmount) + '</strong></span><span>사용예산 <strong>' + money(unit.usedAmount) +
+                '</strong></span><span>잔여예산 <strong>' + money(unit.remainingAmount) + '</strong></span><span>집행률 <strong>' + unit.usageRate + '%</strong></span></div>' +
+                '<div class="budget-progress"><span style="width:' + Math.min(unit.usageRate, 100) + '%"></span></div><div class="budget-breakdown">' +
+                unit.categoryBreakdown.map(function (item) { return '<span>' + e(item.title) + '<strong>' + money(item.usedAmount) + ' / ' + money(item.approvedAmount) + '</strong></span>'; }).join('') +
+                '</div><h3>승인 지출결의서</h3><ul class="budget-occurrence-list">' + occurrences + '</ul></article>';
+        }).join('') : view.categories.map(function (category) {
+            return '<article><header><div><span>예산 지출항목</span><h2>' + e(category.title) + '</h2></div>' +
+                (category.missingEvidenceCount ? badge('증빙 누락 ' + category.missingEvidenceCount + '건', 'danger') : badge('정상', 'success')) + '</header>' +
+                '<div class="budget-values"><span>승인 <strong>' + money(category.approvedAmount) + '</strong></span><span>사용 <strong>' + money(category.usedAmount) +
+                '</strong></span><span>잔여 <strong>' + money(category.remainingAmount) + '</strong></span><span>승인 비율 <strong>' + category.approvedShareRate + '% / 한도 ' + category.maxRate +
+                '%</strong></span></div><div class="budget-progress"><span style="width:' + Math.min(category.usageRate, 100) + '%"></span></div><footer>승인 지출결의서 ' + category.expenseCount + '건 · 집행률 ' + category.usageRate + '%</footer></article>';
+        }).join('');
+        return '<section class="slide-section"><div class="section-heading"><div><span class="section-kicker">예산</span><h2>승인예산과 사용예산</h2>' +
+            '<p>승인된 지출결의서의 단위사업·회차·지출항목을 읽어 자동 집계합니다.</p></div><span class="plan-source">Operation ' + e(view.operationVersion) + ' 기준</span></div>' +
+            '<div class="budget-control-summary"><div><span>승인예산</span><strong>' + money(view.summary.approvedTotal) + '</strong></div><div><span>사용예산</span><strong>' + money(view.summary.usedTotal) +
+            '</strong></div><div><span>잔여예산</span><strong>' + money(view.summary.remainingTotal) + '</strong></div><div><span>집행률</span><strong>' + view.summary.usageRate +
+            '%</strong></div><div><span>증빙 누락</span><strong>' + view.summary.missingEvidenceCount + '건</strong></div></div><div class="budget-view-switch"><button data-action="change-budget-view" data-budget-view="unit" class="' +
+            (unitMode ? 'active' : '') + '">단위사업별</button><button data-action="change-budget-view" data-budget-view="category" class="' + (!unitMode ? 'active' : '') + '">예산항목별</button></div>' +
+            '<div class="budget-category-list ' + (unitMode ? 'budget-unit-list' : '') + '">' + cards + '</div></section>';
+    }
 
     function render(root, state) {
         var content = state.activeTab === "개요" ? renderOverview(state.view, state) :
@@ -312,6 +344,7 @@
             state.activeTab === "실행" ? renderExecution(state.executionView) :
             state.activeTab === "자료·문서" ? renderDocuments(state.documentView, state) :
             state.activeTab === "요청·승인" ? renderApprovals(state) :
+            state.activeTab === "예산" ? renderBudget(state) :
             '<section class="slide-section"><div class="panel"><div class="empty-state"><div><strong>' + escapeHtml(state.activeTab) +
             '</strong><p>다음 구현 단계에서 확정 Operation 데이터와 연결됩니다.</p></div></div></div></section>';
         root.innerHTML = '<div class="app-shell">' + renderSidebar() + '<header class="mobile-header"><div class="brand brand--mobile"><div class="brand-mark">P</div><strong>PACEMAKER</strong></div></header>' +

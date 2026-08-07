@@ -37,7 +37,9 @@
             ,approvalRequests: global.PacemakerV2CommunityApprovalRequestsFixture.map(function (item) {
                 return global.PacemakerV2.Product.Approval.RequestModel.create(item);
             }),
-            approvalNotice: null
+            approvalNotice: null,
+            budgetMode: "unit",
+            budgetView: global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: global.PacemakerV2CommunityBudgetStateFixture })
         };
 
         root.addEventListener("change", function (event) {
@@ -55,6 +57,7 @@
             var tab = event.target.closest("button[data-tab]");
             var action = event.target.closest("button[data-action]");
             if (tab) { state.activeTab = tab.dataset.tab; }
+            if (action && action.dataset.action === "change-budget-view") { state.budgetMode = action.dataset.budgetView; }
             if (action && action.dataset.action === "toggle-history") {
                 state.showHistory = !state.showHistory;
             }
