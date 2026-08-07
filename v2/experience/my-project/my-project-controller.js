@@ -49,7 +49,9 @@
             botameStorageDownloads: {},
             storageConnector: global.PacemakerV2.Connector.Storage.BrowserDemoAdapter.create(),
             budgetNotice: null,
-            budgetView: initialBudgetView
+            budgetView: initialBudgetView,
+            performanceReportDraft: null,
+            performanceReportNotice: null
         };
 
         function refreshPerformance() {
@@ -208,6 +210,29 @@
                 versionState.historyEvents = versionState.historyEvents.concat([completedBotame.historyEvent]);
                 refreshBudgetAndOverview();
                 state.budgetNotice = "보탬e 처리 완료로 표시했습니다. 사용예산과 증빙 완료 상태에 반영했습니다.";
+            }
+            if (action && action.dataset.action === "generate-performance-report") {
+                try {
+                    var reportResult = global.PacemakerV2.Runtime.PerformanceReport.generate({
+                        reportDraftId: "RPT-" + Date.now(), performanceView: state.performanceView,
+                        projectTitle: state.view.displayName, startDate: state.view.period.startDate,
+                        endDate: state.view.period.endDate, generatedAt: new Date().toISOString(),
+                        generatedBy: "USR-EXPERT-0001", historyEventId: "HST-REPORT-" + Date.now()
+                    });
+                    state.performanceReportDraft = reportResult.reportDraft;
+                    versionState.historyEvents = versionState.historyEvents.concat([reportResult.historyEvent]);
+                    state.performanceReportNotice = "확정 Operation과 현재 실적을 기준으로 성과보고서 초안을 생성했습니다.";
+                } catch (error) { state.performanceReportNotice = error.message; }
+            }
+            if (action && action.dataset.action === "download-performance-report" && state.performanceReportDraft) {
+                var reportBlob = new Blob([JSON.stringify(state.performanceReportDraft, null, 2)], { type: "application/json;charset=utf-8" });
+                var reportUrl = URL.createObjectURL(reportBlob);
+                var reportLink = document.createElement("a");
+                reportLink.href = reportUrl;
+                reportLink.download = state.view.displayName + "_성과보고서_초안.json";
+                reportLink.click();
+                URL.revokeObjectURL(reportUrl);
+                state.performanceReportNotice = "성과보고서 초안 데이터를 다운로드했습니다.";
             }
             if (action && action.dataset.action === "toggle-history") {
                 state.showHistory = !state.showHistory;

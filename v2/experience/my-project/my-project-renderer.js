@@ -402,15 +402,17 @@
             var tone = section.status === "available" ? "success" : section.status === "supplement_required" ? "danger" : "warning";
             return '<article><strong>' + e(section.title) + '</strong>' + badge(label, tone) + '</article>';
         }).join("");
+        var draftPanel = state.performanceReportDraft ? '<section class="report-draft-panel"><div><span class="section-kicker">생성 완료</span><h2>' + e(state.performanceReportDraft.title) + '</h2><p>Operation ' + e(state.performanceReportDraft.operationVersion) + ' · 단위사업 실적 ' + state.performanceReportDraft.unitProjectResults.length + '건 · 보고서 구성 ' + state.performanceReportDraft.sections.length + '개</p></div><button class="primary-button" data-action="download-performance-report">초안 다운로드</button></section>' : '';
+        var notice = state.performanceReportNotice ? '<div class="notice-bar">' + e(state.performanceReportNotice) + '</div>' : '';
         return '<section class="slide-section"><div class="section-heading"><div><span class="section-kicker">성과·보고</span><h2>실적과 보고 준비 현황</h2>' +
             '<p>확정 Operation의 실행·증빙·예산 데이터를 모아 보고서 작성 전 상태를 확인합니다.</p></div><div class="heading-actions"><span class="plan-source">Operation ' + e(report.operationVersion) + ' 기준</span>' + badge(statusLabel, statusTone) + '</div></div>' +
             '<div class="report-summary"><div><span>사업 실행</span><strong>' + report.summary.completedExecutionCount + '/' + report.summary.plannedExecutionCount + '회</strong><em>' + report.summary.executionRate + '%</em></div>' +
             '<div><span>증빙 완성도</span><strong>' + report.summary.evidenceAttachedCount + '/' + report.summary.evidenceRequiredCount + '건</strong><em>' + report.summary.evidenceCompletionRate + '%</em></div>' +
             '<div><span>사용예산</span><strong>' + money(report.summary.usedBudget) + '</strong><em>집행률 ' + report.summary.budgetUsageRate + '%</em></div>' +
-            '<div><span>보고 전 조치</span><strong>' + report.summary.blockerCount + '종</strong><em>' + statusLabel + '</em></div></div>' +
+            '<div><span>보고 전 조치</span><strong>' + report.summary.blockerCount + '종</strong><em>' + statusLabel + '</em></div></div>' + notice + draftPanel +
             '<section class="report-blocker-panel"><header><div><span class="section-kicker">지금 먼저 처리할 일</span><h2>보고서 생성 전 확인사항</h2></div><strong>' + report.summary.blockerCount + '종</strong></header><div>' + blockers + '</div></section>' +
             '<section class="report-panel"><header><div><span class="section-kicker">단위사업 실적</span><h2>추진 및 증빙 현황</h2></div></header><div class="report-unit-list">' + units + '</div></section>' +
-            '<section class="report-panel"><header><div><span class="section-kicker">보고서 구성</span><h2>자동 취합 영역</h2></div><button class="secondary-button"' + (report.reportStatus === "ready" ? '' : ' disabled') + '>성과보고서 생성</button></header><div class="report-section-list">' + sections + '</div></section></section>';
+            '<section class="report-panel"><header><div><span class="section-kicker">보고서 구성</span><h2>자동 취합 영역</h2></div><button class="secondary-button" data-action="generate-performance-report"' + (report.reportStatus === "ready" ? '' : ' disabled title="보고서 생성 전 확인사항을 먼저 완료해주세요"') + '>성과보고서 생성</button></header><div class="report-section-list">' + sections + '</div></section></section>';
     }
 
     function render(root, state) {
