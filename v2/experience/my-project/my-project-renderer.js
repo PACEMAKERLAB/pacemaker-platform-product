@@ -1,0 +1,138 @@
+/** PACEMAKER Platform Product v2 - My Project Renderer - Version 1.1.0 */
+(function (global) {
+    "use strict";
+    var experience = global.PacemakerV2.Experience;
+    experience.MyProject = experience.MyProject || {};
+
+    var TABS = [
+        { id: "개요", label: "개요" },
+        { id: "운영계획", label: "운영계획" },
+        { id: "실행", label: "실행" },
+        { id: "예산", label: "예산" },
+        { id: "자료·문서", label: "자료·문서" },
+        { id: "요청·승인", label: "요청·승인" },
+        { id: "성과보고", label: "성과·보고" }
+    ];
+
+    function escapeHtml(value) {
+        return String(value === undefined || value === null ? "" : value)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    function money(value) {
+        return new Intl.NumberFormat("ko-KR").format(Number(value) || 0) + "원";
+    }
+
+    function icon(name) {
+        var paths = {
+            home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/>',
+            folder: '<path d="M3 6.5h7l2 2h9v11H3z"/>',
+            archive: '<path d="M4 7h16v13H4z"/><path d="M3 3h18v4H3z"/><path d="M9 12h6"/>',
+            users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',
+            chevron: '<path d="m9 18 6-6-6-6"/>',
+            more: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+            check: '<path d="m5 12 4 4L19 6"/>',
+            arrow: '<path d="m9 18 6-6-6-6"/>'
+        };
+        return '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">' + (paths[name] || paths.arrow) + '</svg>';
+    }
+
+    function badge(label, tone) {
+        return '<span class="status-badge status-badge--' + tone + '">' + escapeHtml(label) + '</span>';
+    }
+
+    function renderSidebar() {
+        return '<aside class="sidebar"><div class="brand"><div class="brand-mark">P</div><div><strong>PACEMAKER</strong><span>Operating OS</span></div></div>' +
+            '<nav class="main-nav"><button class="nav-item">' + icon("home") + '<span>메인</span></button>' +
+            '<button class="nav-item nav-item--parent is-active"><span class="nav-item-label">' + icon("folder") + '<span>내 사업</span></span><span class="nav-chevron is-open">' + icon("chevron") + '</span></button>' +
+            '<div class="project-menu is-open"><button class="project-link is-active"><span class="project-dot"></span>함께머묾</button><button class="project-link"><span class="project-dot"></span>헬로우클래식</button></div>' +
+            '<button class="nav-item">' + icon("users") + '<span>고객 관리</span><small class="expert-only">전문가</small></button>' +
+            '<button class="nav-item">' + icon("archive") + '<span>아카이브</span></button></nav>' +
+            '<div class="sidebar-profile"><div class="avatar">서</div><div><strong>서현</strong><span>운영 전문가</span></div></div></aside>';
+    }
+
+    function renderTabs(state) {
+        return '<div class="workspace-tabs" role="tablist">' + TABS.map(function (tab) {
+            return '<button role="tab" class="workspace-tab' + (state.activeTab === tab.id ? " is-active" : "") +
+                '" data-tab="' + tab.id + '">' + tab.label + '</button>';
+        }).join("") + '</div>';
+    }
+
+    function unitStatus(unit) {
+        if (unit.evidenceMissingCount > 0) { return badge("자료 확인 필요", "danger"); }
+        if (unit.completedCount > 0) { return badge("진행 중", "info"); }
+        return badge("예정", "neutral");
+    }
+
+    function renderUnits(view) {
+        return view.unitProjects.map(function (unit) {
+            var tasks = [];
+            if (unit.evidenceMissingCount > 0) {
+                tasks.push({ title: "완료 회차 증빙 " + unit.evidenceMissingCount + "건 확인", state: "확인 필요", tone: "active" });
+            }
+            if (unit.planningRequiredCount > 0) {
+                tasks.push({ title: "남은 " + unit.planningRequiredCount + "회 일정·실행계획 등록", state: "미착수", tone: "pending" });
+            }
+            tasks.push({ title: "회차별 준비자료와 담당자 확인", state: unit.scheduleCount ? "진행 중" : "미착수", tone: unit.scheduleCount ? "active" : "pending" });
+            tasks.push({ title: "예산 항목 연결 확인", state: "진행 중", tone: "active" });
+
+            return '<article class="overview-unit"><button class="overview-unit-head"><span><small>단위사업</small><strong>' +
+                escapeHtml(unit.title) + '</strong><em>계획 ' + unit.plannedCount + '회 · 완료 ' + unit.completedCount + '회</em></span>' +
+                unitStatus(unit) + icon("arrow") + '</button><div class="unit-current"><span>전체 진행률</span><strong>' +
+                unit.progressRate + '% · 남은 실행 ' + unit.remainingCount + '회</strong></div><div class="unit-progress-line"><span style="width:' +
+                unit.progressRate + '%"></span></div><div class="unit-operation-metrics"><span>일정 등록 <strong>' + unit.scheduleCount +
+                '회</strong></span><span>계획 필요 <strong>' + unit.planningRequiredCount + '회</strong></span><span>증빙 누락 <strong>' +
+                unit.evidenceMissingCount + '건</strong></span></div><ol class="unit-checklist">' + tasks.map(function (task) {
+                    return '<li><span class="check-state check-state--' + task.tone + '">' + (task.tone === "complete" ? icon("check") : "") +
+                        '</span><strong>' + escapeHtml(task.title) + '</strong><small>' + task.state + '</small></li>';
+                }).join("") + '</ol></article>';
+        }).join("");
+    }
+
+    function renderOverview(view) {
+        var budget = view.budget[0] || { approvedAmount: 0, usedAmount: 0, remainingAmount: 0, usageRate: 0 };
+        var process = view.process.steps.map(function (step, index) {
+            var className = index < view.process.current ? " is-complete" : (index === view.process.current ? " is-current" : "");
+            return '<div class="process-step' + className + '"><span class="process-node">' +
+                (index < view.process.current ? icon("check") : index + 1) + '</span><strong>' + escapeHtml(step) + '</strong>' +
+                (index === view.process.current ? '<small>현재 위치</small>' : '') + '</div>';
+        }).join("");
+        var completed = view.unitProjects.reduce(function (sum, unit) { return sum + unit.completedCount; }, 0);
+        var planned = view.unitProjects.reduce(function (sum, unit) { return sum + unit.plannedCount; }, 0);
+
+        return '<section class="slide-section"><div class="project-snapshot"><div class="snapshot-main"><span class="section-kicker">사업 개요</span>' +
+            '<h2>우리동네 함께머묾다</h2><p>주민 소통활동과 계절형 소식지를 통해 마을의 이야기와 관계를 축적하는 사업</p>' +
+            '<div class="snapshot-meta"><span>사업기간 <strong>2026. 6. 1. - 11. 30.</strong></span><span>현재단계 <strong>' +
+            escapeHtml(view.currentStageTitle) + '</strong></span><span>담당 <strong>서현 전문가</strong></span></div></div>' +
+            '<div class="budget-summary"><span>예산 집행현황</span><strong>' + budget.usageRate + '%</strong><dl>' +
+            '<div><dt>승인예산</dt><dd>' + money(view.totals.approvedBudget) + '</dd></div><div><dt>사용예산</dt><dd>' +
+            money(view.totals.usedBudget) + '</dd></div><div><dt>잔여예산</dt><dd>' + money(view.totals.approvedBudget - view.totals.usedBudget) +
+            '</dd></div></dl><button class="budget-link" data-tab="예산">예산 상세 보기 →</button></div></div>' +
+            '<div class="summary-strip operation-summary-strip"><div><span>전체 진행률</span><strong>' + view.totalProgressRate +
+            '%</strong></div><div><span>단위사업</span><strong>' + view.unitProjects.length + '개</strong></div><div><span>전체 실행</span><strong>' +
+            completed + '/' + planned + '회</strong></div><div><span>증빙 누락</span><strong>' + view.totals.evidenceMissing +
+            '건</strong></div><div><span>계획 등록 필요</span><strong>' + view.totals.planningRequired + '회</strong></div></div>' +
+            '<div class="overview-units-heading"><div><span class="section-kicker">단위사업 전체 현황</span><h2>계획과 해야 할 일</h2>' +
+            '<p>완료·진행·미착수와 회차별 계획·증빙 상태를 함께 확인합니다.</p></div><div class="inline-actions"><button class="secondary-button">+ 계획 추가</button>' +
+            '<button class="text-button" data-tab="운영계획">운영계획 상세</button></div></div><div class="overview-unit-grid">' + renderUnits(view) + '</div>' +
+            '<div class="process-panel"><div class="process-heading"><div><span class="section-kicker">전체 프로세스</span><h2>현재 ‘운영’ 단계입니다</h2></div>' +
+            '<span>' + (view.process.current + 1) + ' / ' + view.process.steps.length + '</span></div><div class="process-track">' + process + '</div></div>' +
+            '<div class="recent-change"><span>최근 변경</span><strong>승인된 수정 사업비 산출내역을 현재 예산으로 확정했습니다.</strong><button>전체 이력</button></div></section>';
+    }
+
+    function render(root, state) {
+        var content = state.activeTab === "개요" ? renderOverview(state.view) :
+            '<section class="slide-section"><div class="panel"><div class="empty-state"><div><strong>' + escapeHtml(state.activeTab) +
+            '</strong><p>다음 구현 단계에서 확정 Operation 데이터와 연결됩니다.</p></div></div></div></section>';
+        root.innerHTML = '<div class="app-shell">' + renderSidebar() + '<header class="mobile-header"><div class="brand brand--mobile"><div class="brand-mark">P</div><strong>PACEMAKER</strong></div></header>' +
+            '<main class="content content--workspace"><header class="workspace-header"><div><span class="breadcrumb">내 사업 / 함께머묾</span>' +
+            '<div class="workspace-title"><h1>함께머묾</h1>' + badge("운영 중", "success") + '</div><p>우리동네 함께머묾다 · 2026. 6. 1. - 11. 30.</p></div>' +
+            '<div class="workspace-tools"><span><small>담당</small><strong>서현 전문가</strong></span><button class="expert-chat-button"><i></i><span>상담 가능</span><strong>전문가와 대화</strong></button>' +
+            '<button class="icon-button">' + icon("more") + '</button></div></header>' + renderTabs(state) +
+            '<div class="slide-shell"><button class="slide-arrow slide-arrow--left">' + icon("arrow") + '</button><div class="slide-content">' +
+            content + '</div><button class="slide-arrow slide-arrow--right">' + icon("arrow") + '</button></div></main></div>';
+    }
+
+    experience.MyProject.Renderer = Object.freeze({ render: render });
+}(typeof globalThis !== "undefined" ? globalThis : this));

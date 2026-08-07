@@ -39,7 +39,7 @@
         assert(operationDraft.status === "draft", "generated operation must be draft");
         assert(operationDraft.currentVersion === null, "draft must not have a confirmed version");
         assert(operationDraft.sourceAssetIds[0] === sourceAsset.sourceAssetId, "source trace must remain");
-        assert(operationDraft.unitProjects.length === 2, "unit projects must be mapped");
+        assert(operationDraft.unitProjects.length === 3, "unit projects must be mapped");
         assert(operationDraft.budget.approved[0].amount === 20000000, "approved budget must be mapped");
         assert(
             operationDraft.protocolRecommendation.protocolId === "PTC-COMMUNITY-001",

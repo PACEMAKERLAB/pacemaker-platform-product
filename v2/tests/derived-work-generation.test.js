@@ -80,10 +80,10 @@
         });
 
         assert(JSON.stringify(first) === JSON.stringify(second), "same input must create identical DerivedWork");
-        assert(first.summary.taskCount === 46, "lifecycle and occurrence tasks must be generated");
-        assert(first.summary.scheduleCount === 4, "registered occurrence dates must create schedules");
-        assert(first.summary.documentRequirementCount === 45, "documents must be generated per occurrence");
-        assert(first.summary.checklistItemCount === 87, "tasks and documents must create checklist items");
+        assert(first.summary.taskCount === 50, "lifecycle and occurrence tasks must be generated");
+        assert(first.summary.scheduleCount === 5, "registered occurrence dates must create schedules");
+        assert(first.summary.documentRequirementCount === 49, "documents must be generated per occurrence");
+        assert(first.summary.checklistItemCount === 95, "tasks and documents must create checklist items");
         assert(first.summary.budgetCategoryCount === 1, "approved budget must create budget control");
         assert(first.summary.planningRequiredCount === 11, "missing occurrence plans must create alerts");
 

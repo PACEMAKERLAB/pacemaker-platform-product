@@ -80,6 +80,19 @@
                         { taskCode: "prepare-photo", title: "활동 사진 촬영 담당 확인" }
                     ],
                     requiredDocumentTypes: ["attendance", "photo", "expense-resolution"]
+                },
+                {
+                    unitProjectId: "UNT-003",
+                    title: "성과공유회",
+                    plannedCount: 1,
+                    occurrenceDates: ["2026-11-15"],
+                    preparationTasks: [
+                        { taskCode: "confirm-venue", title: "공유회 장소 확정" },
+                        { taskCode: "prepare-result", title: "성과자료 취합" },
+                        { taskCode: "prepare-invitation", title: "참여자 안내 준비" },
+                        { taskCode: "prepare-operation", title: "진행 순서와 역할 확정" }
+                    ],
+                    requiredDocumentTypes: ["activity-plan", "attendance", "photo", "expense-resolution"]
                 }
             ],
             budget: {
