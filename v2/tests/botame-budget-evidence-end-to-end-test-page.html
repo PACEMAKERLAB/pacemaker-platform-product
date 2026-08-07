@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>PACEMAKER Botam-e Budget Evidence E2E Test</title></head><body>
+<h1>PACEMAKER v2 Botam-e Budget + Evidence End-to-End Test</h1><pre id="result">RUNNING</pre>
+<script src="../runtime/pacemaker-v2-namespace.js"></script>
+<script src="../product/botame/botame-submission-package-model.js"></script>
+<script src="../engine/botame-submission/botame-submission-package-generator.js"></script>
+<script src="../engine/budget/budget-control-projector.js"></script>
+<script src="../connector/storage/storage-connector-contract.js"></script>
+<script src="../runtime/expense-resolution-review-runtime.js"></script>
+<script src="../runtime/botame-submission-runtime.js"></script>
+<script src="../runtime/botame-submission-download-runtime.js"></script>
+<script src="../runtime/botame-completion-runtime.js"></script>
+<script src="community-budget-state.fixture.js"></script>
+<script src="fake-storage-connector.fixture.js"></script>
+<script src="botame-budget-evidence-end-to-end.test.js"></script>
+<script>(async function(){var output=document.getElementById("result");try{output.textContent=JSON.stringify(await PacemakerV2BotameBudgetEvidenceEndToEndTest.run(),null,2);}catch(error){output.textContent="FAIL\n"+error.stack;throw error;}}());</script>
+</body></html>
