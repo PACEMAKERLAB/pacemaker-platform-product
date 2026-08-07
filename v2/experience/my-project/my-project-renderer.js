@@ -259,6 +259,25 @@
             (state.documentNotice ? '<div class="document-notice">' + escapeHtml(state.documentNotice) + '</div>' : '') + units + '</section>';
     }
 
+    function renderMappingModal(state) {
+        var draft = state.mappingDraft;
+        var view = state.documentView;
+        var selectedUnit;
+        if (!draft) { return ""; }
+        selectedUnit = view.units.find(function (unit) { return unit.unitProjectId === draft.unitProjectId; }) || view.units[0];
+        return '<div class="mapping-backdrop"><section class="mapping-dialog"><header><div><span class="section-kicker">자료 매핑 확인</span><h2>' +
+            escapeHtml(draft.sourceAsset.fileName) + '</h2><p>자동 추천 결과를 확인하고 필요한 경우 수정해주세요.</p></div><button data-action="cancel-mapping">×</button></header>' +
+            '<div class="mapping-confidence"><span>추천 신뢰도</span><strong>' + Math.round(draft.mapping.confidence * 100) + '%</strong><em>파일명 기반 추천</em></div>' +
+            '<div class="mapping-fields"><label><span>단위사업</span><select data-mapping-field="unitProjectId">' + view.units.map(function (unit) {
+                return '<option value="' + unit.unitProjectId + '"' + (unit.unitProjectId === draft.unitProjectId ? " selected" : "") + '>' + escapeHtml(unit.title) + '</option>';
+            }).join("") + '</select></label><label><span>회차</span><select data-mapping-field="occurrenceId">' + selectedUnit.occurrences.map(function (occurrence) {
+                return '<option value="' + occurrence.occurrenceId + '"' + (occurrence.occurrenceId === draft.occurrenceId ? " selected" : "") + '>' + occurrence.round + '회 · ' + escapeHtml(occurrence.scheduledDate || "일정 미등록") + '</option>';
+            }).join("") + '</select></label><label><span>문서유형</span><select data-mapping-field="documentType">' + selectedUnit.occurrences[0].documents.map(function (document) {
+                return '<option value="' + document.documentType + '"' + (document.documentType === draft.documentType ? " selected" : "") + '>' + escapeHtml(document.title) + '</option>';
+            }).join("") + '</select></label></div><div class="mapping-trace"><span>사업</span><strong>함께머묾</strong><b>→</b><span>단위사업·회차</span><strong>' +
+            escapeHtml(selectedUnit.title) + '</strong><b>→</b><span>자료 상태</span><strong>확인 후 첨부</strong></div><footer><button class="secondary-button" data-action="cancel-mapping">취소</button><button class="primary-button" data-action="confirm-mapping">매핑 확인·저장</button></footer></section></div>';
+    }
+
     function render(root, state) {
         var content = state.activeTab === "개요" ? renderOverview(state.view, state) :
             state.activeTab === "운영계획" ? renderPlan(state.planView) :
@@ -272,7 +291,7 @@
             '<div class="workspace-tools"><span><small>담당</small><strong>' + escapeHtml(state.view.manager.name) + '</strong></span><button class="expert-chat-button"><i></i><span>상담 가능</span><strong>전문가와 대화</strong></button>' +
             '<button class="icon-button">' + icon("more") + '</button></div></header>' + renderTabs(state) +
             '<div class="slide-shell"><button class="slide-arrow slide-arrow--left">' + icon("arrow") + '</button><div class="slide-content">' +
-            content + '</div><button class="slide-arrow slide-arrow--right">' + icon("arrow") + '</button></div></main></div>';
+            content + '</div><button class="slide-arrow slide-arrow--right">' + icon("arrow") + '</button></div></main></div>' + renderMappingModal(state);
     }
 
     experience.MyProject.Renderer = Object.freeze({ render: render });

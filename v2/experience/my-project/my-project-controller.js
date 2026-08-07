@@ -25,8 +25,20 @@
             documentView: global.PacemakerV2.Engine.OperationProjection.DocumentProjector.project(
                 operation, derivedWork, executionState
             ),
-            documentNotice: null
+            documentNotice: null,
+            mappingDraft: null
         };
+
+        root.addEventListener("change", function (event) {
+            if (!state.mappingDraft || !event.target.dataset.mappingField) { return; }
+            state.mappingDraft[event.target.dataset.mappingField] = event.target.value;
+            if (event.target.dataset.mappingField === "unitProjectId") {
+                state.mappingDraft.occurrenceId = event.target.value + "-R001";
+                var selectedUnit = operation.unitProjects.find(function (item) { return item.unitProjectId === event.target.value; });
+                state.mappingDraft.documentType = selectedUnit.requiredDocumentTypes[0];
+            }
+            experience.MyProject.Renderer.render(root, state);
+        });
 
         root.addEventListener("click", function (event) {
             var tab = event.target.closest("button[data-tab]");
@@ -40,10 +52,47 @@
                 input.type = "file";
                 input.multiple = true;
                 input.onchange = function () {
-                    state.documentNotice = input.files.length + "개 파일을 선택했습니다. 저장 전 사업·단위사업·회차 매핑을 확인해야 합니다.";
+                    var file = input.files[0];
+                    var now = new Date().toISOString();
+                    var suggested = global.PacemakerV2.Runtime.AssetMapping.suggest({
+                        assetMappingId: "AMP-" + Date.now(),
+                        sourceAsset: {
+                            sourceAssetId: "AST-UPLOAD-" + Date.now(), projectId: operation.projectId,
+                            assetType: "other", fileName: file.name, mimeType: file.type,
+                            storageReference: "browser-session://" + encodeURIComponent(file.name),
+                            authority: "evidence", uploadedBy: "USR-EXPERT-0001", now: now
+                        },
+                        operation: operation
+                    });
+                    var suggestedOccurrence = suggested.mapping.occurrenceId || "";
+                    state.mappingDraft = {
+                        sourceAsset: suggested.sourceAsset, mapping: suggested.mapping,
+                        unitProjectId: suggested.mapping.unitProjectId || operation.unitProjects[0].unitProjectId,
+                        occurrenceId: suggestedOccurrence || operation.unitProjects[0].unitProjectId + "-R001",
+                        documentType: suggested.mapping.documentType || operation.unitProjects[0].requiredDocumentTypes[0]
+                    };
+                    state.documentNotice = input.files.length + "개 파일을 선택했습니다. 매핑을 확인한 뒤 저장해주세요.";
                     experience.MyProject.Renderer.render(root, state);
                 };
                 input.click();
+            }
+            if (action && action.dataset.action === "cancel-mapping") {
+                state.mappingDraft = null;
+            }
+            if (action && action.dataset.action === "confirm-mapping" && state.mappingDraft) {
+                var mapped = global.PacemakerV2.Runtime.AssetMapping.confirm({
+                    sourceAsset: state.mappingDraft.sourceAsset, mapping: state.mappingDraft.mapping,
+                    unitProjectId: state.mappingDraft.unitProjectId, occurrenceId: state.mappingDraft.occurrenceId,
+                    documentType: state.mappingDraft.documentType, executionState: executionState,
+                    confirmedAt: new Date().toISOString(), confirmedBy: "USR-EXPERT-0001",
+                    historyEventId: "HST-ASSET-" + Date.now()
+                });
+                executionState = mapped.executionState;
+                state.documentView = global.PacemakerV2.Engine.OperationProjection.DocumentProjector.project(
+                    operation, derivedWork, executionState
+                );
+                state.documentNotice = mapped.sourceAsset.fileName + " 파일을 " + mapped.assetMapping.occurrenceId + "에 매핑했습니다.";
+                state.mappingDraft = null;
             }
             if (!tab && !action) { return; }
             experience.MyProject.Renderer.render(root, state);

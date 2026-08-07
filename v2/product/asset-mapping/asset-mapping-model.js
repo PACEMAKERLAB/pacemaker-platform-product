@@ -1,0 +1,6 @@
+/** PACEMAKER Platform Product v2 - Asset Mapping Model - Version 1.0.0 */
+(function(global){"use strict";var product=global.PacemakerV2.Product;product.AssetMapping=product.AssetMapping||{};
+function create(input){return{assetMappingId:input.assetMappingId,sourceAssetId:input.sourceAssetId,projectId:input.projectId,operationId:input.operationId,operationVersion:input.operationVersion,unitProjectId:input.unitProjectId||null,occurrenceId:input.occurrenceId||null,documentType:input.documentType||null,status:input.status||"suggested",confidence:Number(input.confidence)||0,suggestedBy:input.suggestedBy||"rule",confirmedAt:input.confirmedAt||null,confirmedBy:input.confirmedBy||null};}
+function validate(item){var errors=[];["assetMappingId","sourceAssetId","projectId","operationId","operationVersion"].forEach(function(field){if(!item[field]){errors.push(field+" must not be empty");}});if(item.status==="confirmed"&&(!item.occurrenceId||!item.documentType||!item.confirmedBy)){errors.push("confirmed mapping requires occurrence, document type and confirmer");}return{valid:errors.length===0,errors:errors};}
+product.AssetMapping.Model=Object.freeze({create:create,validate:validate});
+}(typeof globalThis!=="undefined"?globalThis:this));

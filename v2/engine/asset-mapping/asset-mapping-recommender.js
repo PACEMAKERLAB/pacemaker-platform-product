@@ -1,0 +1,8 @@
+/** PACEMAKER Platform Product v2 - Asset Mapping Recommender - Version 1.0.0 */
+(function(global){"use strict";var engine=global.PacemakerV2.Engine;engine.AssetMapping=engine.AssetMapping||{};
+function documentType(fileName){var name=String(fileName).toLowerCase();if(/서명|참석/.test(name)){return"attendance";}if(/사진|photo|img/.test(name)){return"photo";}if(/지출|결의|영수/.test(name)){return"expense-resolution";}if(/계획/.test(name)){return"activity-plan";}return null;}
+function round(fileName){var match=String(fileName).match(/(?:^|[^0-9])(\d{1,2})\s*회/);return match?Number(match[1]):null;}
+function unit(fileName,operation){var name=String(fileName);return operation.unitProjects.find(function(item){return name.indexOf(item.title)!==-1;})||null;}
+function recommend(input){var matchedUnit=unit(input.sourceAsset.fileName,input.operation);var matchedRound=round(input.sourceAsset.fileName);var type=documentType(input.sourceAsset.fileName);if(matchedUnit&&matchedRound>matchedUnit.plannedCount){matchedRound=null;}return global.PacemakerV2.Product.AssetMapping.Model.create({assetMappingId:input.assetMappingId,sourceAssetId:input.sourceAsset.sourceAssetId,projectId:input.operation.projectId,operationId:input.operation.operationId,operationVersion:input.operation.currentVersion,unitProjectId:matchedUnit?matchedUnit.unitProjectId:null,occurrenceId:matchedUnit&&matchedRound?matchedUnit.unitProjectId+"-R"+String(matchedRound).padStart(3,"0"):null,documentType:type,status:"suggested",confidence:(matchedUnit?0.34:0)+(matchedRound?0.33:0)+(type?0.33:0),suggestedBy:"filename_rule"});}
+engine.AssetMapping.Recommender=Object.freeze({recommend:recommend});
+}(typeof globalThis!=="undefined"?globalThis:this));
