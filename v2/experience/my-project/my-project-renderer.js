@@ -230,10 +230,40 @@
             '<span>조치 필요 일정을 먼저 표시합니다.</span></div><div class="execution-schedule-grid">' + cards + '</div>' + ledgers + '</section>';
     }
 
+    function documentBadge(document) {
+        var label = { attached: "첨부 완료", missing: "누락", planned: "준비 예정" }[document.status];
+        return '<span class="document-chip document-chip--' + document.status + '"><strong>' + escapeHtml(document.title) +
+            '</strong><small>' + label + '</small></span>';
+    }
+
+    function renderDocuments(view, state) {
+        var units = view.units.map(function (unit) {
+            var rows = unit.occurrences.map(function (occurrence) {
+                var status = occurrence.executionStatus === "completed" ? badge("완료", "success") :
+                    occurrence.executionStatus === "scheduled" ? badge("일정 등록", "info") : badge("계획 필요", "warning");
+                return '<article class="document-round"><div class="document-round-meta"><strong>' + occurrence.round + '회</strong><span>' +
+                    escapeHtml(occurrence.scheduledDate || "일정 미등록") + '</span>' + status + '</div><div class="document-chip-list">' +
+                    occurrence.documents.map(documentBadge).join("") + '</div><button class="document-map-button" data-action="upload-document">파일 첨부·매핑</button></article>';
+            }).join("");
+            return '<section class="document-unit"><header><div><span class="section-kicker">단위사업</span><h2>' + escapeHtml(unit.title) +
+                '</h2><p>계획 ' + unit.plannedCount + '회 · 완료 ' + unit.completedCount + '회</p></div><div class="document-unit-summary"><span>필요 <strong>' +
+                unit.summary.requiredCount + '</strong></span><span>첨부 <strong>' + unit.summary.attachedCount + '</strong></span><span>누락 <strong>' +
+                unit.summary.missingCount + '</strong></span></div></header><div class="document-round-list">' + rows + '</div></section>';
+        }).join("");
+        return '<section class="slide-section"><div class="section-heading"><div><span class="section-kicker">자료·문서</span><h2>회차별 필요서류와 첨부 현황</h2>' +
+            '<p>완료한 활동의 서명부·사진·지출 증빙을 회차별로 확인합니다.</p></div><div class="heading-actions"><span class="plan-source">Operation ' +
+            escapeHtml(view.operationVersion) + ' 기준</span><button class="secondary-button" data-action="upload-document">+ 파일 업로드</button></div></div>' +
+            '<div class="document-summary"><div><span>전체 회차</span><strong>' + view.summary.occurrenceCount + '회</strong></div><div><span>필요 문서</span><strong>' +
+            view.summary.requiredCount + '건</strong></div><div><span>첨부 완료</span><strong>' + view.summary.attachedCount + '건</strong></div><div><span>완료 회차 누락</span><strong>' +
+            view.summary.missingCount + '건</strong></div><div><span>준비 예정</span><strong>' + view.summary.plannedCount + '건</strong></div></div>' +
+            (state.documentNotice ? '<div class="document-notice">' + escapeHtml(state.documentNotice) + '</div>' : '') + units + '</section>';
+    }
+
     function render(root, state) {
         var content = state.activeTab === "개요" ? renderOverview(state.view, state) :
             state.activeTab === "운영계획" ? renderPlan(state.planView) :
             state.activeTab === "실행" ? renderExecution(state.executionView) :
+            state.activeTab === "자료·문서" ? renderDocuments(state.documentView, state) :
             '<section class="slide-section"><div class="panel"><div class="empty-state"><div><strong>' + escapeHtml(state.activeTab) +
             '</strong><p>다음 구현 단계에서 확정 Operation 데이터와 연결됩니다.</p></div></div></div></section>';
         root.innerHTML = '<div class="app-shell">' + renderSidebar() + '<header class="mobile-header"><div class="brand brand--mobile"><div class="brand-mark">P</div><strong>PACEMAKER</strong></div></header>' +

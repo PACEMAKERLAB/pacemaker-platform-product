@@ -21,7 +21,11 @@
             ),
             executionView: global.PacemakerV2.Engine.OperationProjection.ExecutionProjector.project(
                 operation, derivedWork, executionState
-            )
+            ),
+            documentView: global.PacemakerV2.Engine.OperationProjection.DocumentProjector.project(
+                operation, derivedWork, executionState
+            ),
+            documentNotice: null
         };
 
         root.addEventListener("click", function (event) {
@@ -30,6 +34,16 @@
             if (tab) { state.activeTab = tab.dataset.tab; }
             if (action && action.dataset.action === "toggle-history") {
                 state.showHistory = !state.showHistory;
+            }
+            if (action && action.dataset.action === "upload-document") {
+                var input = document.createElement("input");
+                input.type = "file";
+                input.multiple = true;
+                input.onchange = function () {
+                    state.documentNotice = input.files.length + "개 파일을 선택했습니다. 저장 전 사업·단위사업·회차 매핑을 확인해야 합니다.";
+                    experience.MyProject.Renderer.render(root, state);
+                };
+                input.click();
             }
             if (!tab && !action) { return; }
             experience.MyProject.Renderer.render(root, state);
