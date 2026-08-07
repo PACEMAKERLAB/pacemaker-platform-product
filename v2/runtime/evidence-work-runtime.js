@@ -1,0 +1,2 @@
+/** PACEMAKER Platform Product v2 - Evidence Work Runtime - Version 1.0.0 */
+(function(global){"use strict";global.PacemakerV2.Runtime.EvidenceWork=Object.freeze({execute:function(input){if(!input.derivedWork||!input.executionState){throw new Error("Evidence work requires derived work and execution state");}return global.PacemakerV2.Engine.WorkReconciliation.EvidenceWorkReconciler.reconcile(input);}});}(typeof globalThis!=="undefined"?globalThis:this));

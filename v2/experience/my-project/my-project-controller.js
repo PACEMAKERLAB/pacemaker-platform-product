@@ -10,6 +10,9 @@
         var operation = versionState.operation;
         var executionState = global.PacemakerV2CommunityExecutionStateFixture;
         var derivedWork = global.PacemakerV2.Runtime.DerivedWork.execute(operation, { asOfDate: executionState.asOfDate });
+        var evidenceWork = global.PacemakerV2.Runtime.EvidenceWork.execute({
+            derivedWork: derivedWork, executionState: executionState, reconciledAt: new Date().toISOString()
+        });
         var state = {
             activeTab: "개요",
             showHistory: false,
@@ -26,7 +29,8 @@
                 operation, derivedWork, executionState
             ),
             documentNotice: null,
-            mappingDraft: null
+            mappingDraft: null,
+            evidenceWork: evidenceWork
         };
 
         root.addEventListener("change", function (event) {
@@ -88,10 +92,23 @@
                     historyEventId: "HST-ASSET-" + Date.now()
                 });
                 executionState = mapped.executionState;
+                versionState.historyEvents = versionState.historyEvents.concat([mapped.historyEvent]);
+                var nextEvidenceWork = global.PacemakerV2.Runtime.EvidenceWork.execute({
+                    derivedWork: derivedWork, executionState: executionState,
+                    previousResult: state.evidenceWork, reconciledAt: new Date().toISOString()
+                });
+                state.evidenceWork = nextEvidenceWork;
                 state.documentView = global.PacemakerV2.Engine.OperationProjection.DocumentProjector.project(
                     operation, derivedWork, executionState
                 );
-                state.documentNotice = mapped.sourceAsset.fileName + " 파일을 " + mapped.assetMapping.occurrenceId + "에 매핑했습니다.";
+                state.view = global.PacemakerV2.Engine.OperationProjection.OverviewProjector.project(
+                    operation, derivedWork, executionState, versionState
+                );
+                state.executionView = global.PacemakerV2.Engine.OperationProjection.ExecutionProjector.project(
+                    operation, derivedWork, executionState
+                );
+                state.documentNotice = mapped.sourceAsset.fileName + " 파일을 " + mapped.assetMapping.occurrenceId + "에 매핑했습니다. " +
+                    (nextEvidenceWork.summary.autoCompletedCount ? "관련 할 일 " + nextEvidenceWork.summary.autoCompletedCount + "건이 자동 완료됐습니다." : "관련 할 일 상태를 다시 확인했습니다.");
                 state.mappingDraft = null;
             }
             if (!tab && !action) { return; }

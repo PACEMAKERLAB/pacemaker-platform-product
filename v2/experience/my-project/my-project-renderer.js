@@ -256,6 +256,9 @@
             '<div class="document-summary"><div><span>전체 회차</span><strong>' + view.summary.occurrenceCount + '회</strong></div><div><span>필요 문서</span><strong>' +
             view.summary.requiredCount + '건</strong></div><div><span>첨부 완료</span><strong>' + view.summary.attachedCount + '건</strong></div><div><span>완료 회차 누락</span><strong>' +
             view.summary.missingCount + '건</strong></div><div><span>준비 예정</span><strong>' + view.summary.plannedCount + '건</strong></div></div>' +
+            '<div class="evidence-work-status"><div><span>지금 확인할 증빙 할 일</span><strong>' + state.evidenceWork.summary.todoCount + '건</strong></div>' +
+            '<div><span>전문가 확인 대기</span><strong>' + state.evidenceWork.summary.reviewPendingCount + '건</strong></div><div><span>자동 완료</span><strong>' +
+            state.evidenceWork.summary.autoCompletedCount + '건</strong></div><p>필수자료가 첨부되면 해당 문서 할 일을 자동 완료하고, 반려되면 다시 할 일로 복구합니다.</p></div>' +
             (state.documentNotice ? '<div class="document-notice">' + escapeHtml(state.documentNotice) + '</div>' : '') + units + '</section>';
     }
 

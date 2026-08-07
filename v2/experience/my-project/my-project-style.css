@@ -3043,6 +3043,7 @@ button {
 .document-summary span { display:block; color:#788598; font-size:11px; }
 .document-summary strong { display:block; margin-top:5px; font-size:18px; }
 .document-notice { margin-bottom:16px; padding:13px 16px; border-left:4px solid #ff7a2f; border-radius:10px; color:#69451f; background:#fff2e8; font-size:12px; }
+.evidence-work-status{display:grid;grid-template-columns:repeat(3,150px) 1fr;gap:10px;align-items:center;margin-bottom:16px;padding:14px 16px;border:1px solid #dfe6ee;border-radius:13px;background:#fff}.evidence-work-status>div{padding:9px 11px;border-radius:9px;background:#f4f7fa}.evidence-work-status span{display:block;color:#778497;font-size:10px}.evidence-work-status strong{display:block;margin-top:4px;font-size:16px}.evidence-work-status p{margin:0;color:#6f7c90;font-size:11px;line-height:1.6}
 .document-unit { margin-bottom:18px; overflow:hidden; border:1px solid #dce3eb; border-radius:16px; background:#fff; }
 .document-unit > header { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:18px 20px; border-bottom:1px solid #e6ebf1; }
 .document-unit h2 { margin:4px 0; font-size:18px; }
@@ -3068,6 +3069,7 @@ button {
 .document-chip--missing small { color:#b43c35; }
 .document-map-button { padding:9px 10px; border:1px solid #d8e0e9; border-radius:9px; color:#284363; background:#fff; font-size:11px; font-weight:750; }
 @media(max-width:800px){.document-summary{grid-template-columns:repeat(2,1fr)}.document-round{grid-template-columns:1fr}.document-unit>header{align-items:flex-start;flex-direction:column}}
+@media(max-width:800px){.evidence-work-status{grid-template-columns:1fr 1fr}.evidence-work-status p{grid-column:1/-1}}
 .mapping-backdrop{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(13,29,50,.52)}
 .mapping-dialog{width:min(680px,100%);overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 24px 70px rgba(8,24,44,.25)}
 .mapping-dialog>header{display:flex;justify-content:space-between;gap:18px;padding:22px 24px;border-bottom:1px solid #e4e9ef}
