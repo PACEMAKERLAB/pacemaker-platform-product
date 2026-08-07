@@ -24,6 +24,11 @@
         return new Intl.NumberFormat("ko-KR").format(Number(value) || 0) + "원";
     }
 
+    function date(value) {
+        if (!value) { return "확인 필요"; }
+        return value.replace(/-/g, ". ") + ".";
+    }
+
     function icon(name) {
         var paths = {
             home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/>',
@@ -102,9 +107,9 @@
         var planned = view.unitProjects.reduce(function (sum, unit) { return sum + unit.plannedCount; }, 0);
 
         return '<section class="slide-section"><div class="project-snapshot"><div class="snapshot-main"><span class="section-kicker">사업 개요</span>' +
-            '<h2>우리동네 함께머묾다</h2><p>주민 소통활동과 계절형 소식지를 통해 마을의 이야기와 관계를 축적하는 사업</p>' +
-            '<div class="snapshot-meta"><span>사업기간 <strong>2026. 6. 1. - 11. 30.</strong></span><span>현재단계 <strong>' +
-            escapeHtml(view.currentStageTitle) + '</strong></span><span>담당 <strong>서현 전문가</strong></span></div></div>' +
+            '<h2>' + escapeHtml(view.subtitle) + '</h2><p>' + escapeHtml(view.summary) + '</p>' +
+            '<div class="snapshot-meta"><span>사업기간 <strong>' + date(view.period.startDate) + ' - ' + date(view.period.endDate) + '</strong></span><span>현재단계 <strong>' +
+            escapeHtml(view.currentStageTitle) + '</strong></span><span>담당 <strong>' + escapeHtml(view.manager.name) + '</strong></span></div></div>' +
             '<div class="budget-summary"><span>예산 집행현황</span><strong>' + budget.usageRate + '%</strong><dl>' +
             '<div><dt>승인예산</dt><dd>' + money(view.totals.approvedBudget) + '</dd></div><div><dt>사용예산</dt><dd>' +
             money(view.totals.usedBudget) + '</dd></div><div><dt>잔여예산</dt><dd>' + money(view.totals.approvedBudget - view.totals.usedBudget) +
@@ -116,9 +121,9 @@
             '<div class="overview-units-heading"><div><span class="section-kicker">단위사업 전체 현황</span><h2>계획과 해야 할 일</h2>' +
             '<p>완료·진행·미착수와 회차별 계획·증빙 상태를 함께 확인합니다.</p></div><div class="inline-actions"><button class="secondary-button">+ 계획 추가</button>' +
             '<button class="text-button" data-tab="운영계획">운영계획 상세</button></div></div><div class="overview-unit-grid">' + renderUnits(view) + '</div>' +
-            '<div class="process-panel"><div class="process-heading"><div><span class="section-kicker">전체 프로세스</span><h2>현재 ‘운영’ 단계입니다</h2></div>' +
+            '<div class="process-panel"><div class="process-heading"><div><span class="section-kicker">전체 프로세스</span><h2>현재 ‘' + escapeHtml(view.process.steps[view.process.current]) + '’ 단계입니다</h2></div>' +
             '<span>' + (view.process.current + 1) + ' / ' + view.process.steps.length + '</span></div><div class="process-track">' + process + '</div></div>' +
-            '<div class="recent-change"><span>최근 변경</span><strong>승인된 수정 사업비 산출내역을 현재 예산으로 확정했습니다.</strong><button>전체 이력</button></div></section>';
+            '<div class="recent-change"><span>최근 변경</span><strong>' + escapeHtml(view.recentChange ? view.recentChange.title : "최근 변경이 없습니다.") + '</strong><button>전체 이력</button></div></section>';
     }
 
     function occurrenceBadge(occurrence) {
@@ -173,9 +178,9 @@
             '<section class="slide-section"><div class="panel"><div class="empty-state"><div><strong>' + escapeHtml(state.activeTab) +
             '</strong><p>다음 구현 단계에서 확정 Operation 데이터와 연결됩니다.</p></div></div></div></section>';
         root.innerHTML = '<div class="app-shell">' + renderSidebar() + '<header class="mobile-header"><div class="brand brand--mobile"><div class="brand-mark">P</div><strong>PACEMAKER</strong></div></header>' +
-            '<main class="content content--workspace"><header class="workspace-header"><div><span class="breadcrumb">내 사업 / 함께머묾</span>' +
-            '<div class="workspace-title"><h1>함께머묾</h1>' + badge("운영 중", "success") + '</div><p>우리동네 함께머묾다 · 2026. 6. 1. - 11. 30.</p></div>' +
-            '<div class="workspace-tools"><span><small>담당</small><strong>서현 전문가</strong></span><button class="expert-chat-button"><i></i><span>상담 가능</span><strong>전문가와 대화</strong></button>' +
+            '<main class="content content--workspace"><header class="workspace-header"><div><span class="breadcrumb">내 사업 / ' + escapeHtml(state.view.displayName) + '</span>' +
+            '<div class="workspace-title"><h1>' + escapeHtml(state.view.displayName) + '</h1>' + badge(state.view.projectStatus, "success") + '</div><p>' + escapeHtml(state.view.subtitle) + ' · ' + date(state.view.period.startDate) + ' - ' + date(state.view.period.endDate) + '</p></div>' +
+            '<div class="workspace-tools"><span><small>담당</small><strong>' + escapeHtml(state.view.manager.name) + '</strong></span><button class="expert-chat-button"><i></i><span>상담 가능</span><strong>전문가와 대화</strong></button>' +
             '<button class="icon-button">' + icon("more") + '</button></div></header>' + renderTabs(state) +
             '<div class="slide-shell"><button class="slide-arrow slide-arrow--left">' + icon("arrow") + '</button><div class="slide-content">' +
             content + '</div><button class="slide-arrow slide-arrow--right">' + icon("arrow") + '</button></div></main></div>';

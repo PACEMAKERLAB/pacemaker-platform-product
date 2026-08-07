@@ -119,28 +119,33 @@
         var currentStageIndex = operation.lifecycle.findIndex(function (stage) {
             return stage.stageId === executionState.currentStageId;
         });
-        var processSteps = [
-            "기준 확인",
-            "계획·교부",
-            "착수 준비",
-            "운영",
-            "점검·증빙",
-            "종료",
-            "실적·정산",
-            "성과보고"
-        ];
+        var profile = operation.projectProfile || {};
+        var processSteps = profile.processSteps || [];
+        var recentChanges = executionState.recentChanges || [];
 
         return {
             operationId: operation.operationId,
             operationVersion: operation.currentVersion,
             title: operation.title,
+            displayName: profile.displayName || operation.title,
+            subtitle: profile.subtitle || operation.title,
+            summary: profile.summary || "",
+            period: {
+                startDate: profile.startDate || null,
+                endDate: profile.endDate || null
+            },
+            projectStatus: profile.status || "운영 중",
+            manager: profile.manager || {},
             asOfDate: executionState.asOfDate,
             currentStageId: executionState.currentStageId,
             currentStageTitle: currentStageIndex >= 0 ? operation.lifecycle[currentStageIndex].title : "확인 필요",
             process: {
                 steps: processSteps,
-                current: executionState.currentStageId === "STG-02" ? 3 : Math.max(currentStageIndex, 0)
+                current: Number.isInteger(executionState.currentProcessIndex)
+                    ? executionState.currentProcessIndex
+                    : Math.max(currentStageIndex, 0)
             },
+            recentChange: recentChanges.length ? recentChanges[0] : null,
             lifecycle: operation.lifecycle.map(function (stage, index) {
                 return {
                     stageId: stage.stageId,

@@ -35,6 +35,7 @@
             operationId: source.operationId,
             projectId: analysis.projectId,
             title: analysis.project.title,
+            projectProfile: analysis.project,
             sourceAssetIds: analysis.sourceAssetIds,
             protocolRecommendation: recommendation,
             lifecycle: analysis.lifecycle,

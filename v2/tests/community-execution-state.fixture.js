@@ -26,6 +26,7 @@
     global.PacemakerV2CommunityExecutionStateFixture = Object.freeze({
         asOfDate: "2026-08-07",
         currentStageId: "STG-02",
+        currentProcessIndex: 3,
         completedOccurrences: {
             "UNT-001": 0,
             "UNT-002": 6,
@@ -45,6 +46,14 @@
                 title: "여름호 대체 변경계획서를 등록해주세요.",
                 dueDate: "2026-08-12",
                 priority: "high"
+            }
+        ],
+        recentChanges: [
+            {
+                historyEventId: "HST-2026-0101",
+                title: "승인된 수정 사업비 산출내역을 현재 예산으로 확정했습니다.",
+                changedAt: "2026-08-06T16:20:00.000Z",
+                changedBy: "USR-EXPERT-0001"
             }
         ]
     });

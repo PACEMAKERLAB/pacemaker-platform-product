@@ -21,6 +21,7 @@
             operationId: source.operationId || "",
             projectId: source.projectId || "",
             title: source.title || "",
+            projectProfile: clone(source.projectProfile || {}),
             status: namespace.Schema.status.DRAFT,
             currentVersion: null,
             sourceAssetIds: clone(source.sourceAssetIds || []),

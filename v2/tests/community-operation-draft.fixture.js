@@ -27,8 +27,27 @@
             analyzedAt: "2026-08-07T10:10:00.000Z",
             project: {
                 title: "함께머묾 마을공동체",
+                displayName: "함께머묾",
+                subtitle: "우리동네 함께머묾다",
+                summary: "주민 소통활동과 계절형 소식지를 통해 마을의 이야기와 관계를 축적하는 사업",
                 startDate: "2026-06-01",
-                endDate: "2026-11-30"
+                endDate: "2026-11-30",
+                status: "운영 중",
+                manager: {
+                    managerId: "USR-EXPERT-0001",
+                    name: "서현 전문가",
+                    role: "운영 전문가"
+                },
+                processSteps: [
+                    "기준 확인",
+                    "계획·교부",
+                    "착수 준비",
+                    "운영",
+                    "점검·증빙",
+                    "종료",
+                    "실적·정산",
+                    "성과보고"
+                ]
             },
             lifecycle: [
                 {
