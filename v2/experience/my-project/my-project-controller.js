@@ -51,7 +51,9 @@
             budgetNotice: null,
             budgetView: initialBudgetView,
             performanceReportDraft: null,
-            performanceReportNotice: null
+            performanceReportNotice: null,
+            performanceReportOutput: null,
+            reportConnector: global.PacemakerV2.Connector.Report.BrowserDemoAdapter.create()
         };
 
         function refreshPerformance() {
@@ -233,6 +235,21 @@
                 reportLink.click();
                 URL.revokeObjectURL(reportUrl);
                 state.performanceReportNotice = "성과보고서 초안 데이터를 다운로드했습니다.";
+            }
+            if (action && action.dataset.action === "prepare-performance-report-output" && state.performanceReportDraft) {
+                try {
+                    var outputResult = await global.PacemakerV2.Runtime.ReportOutput.generate({
+                        reportDocumentId: "RPD-" + Date.now(), reportDraft: state.performanceReportDraft,
+                        template: { templateId: "TPL-COMMUNITY-RESULT-001", version: "2026.1", documentTitle: "2026 마을공동체 실적보고서" },
+                        projectTitle: state.view.displayName, organizationName: state.view.subtitle,
+                        fileName: state.view.displayName + "_성과보고서", mappedAt: new Date().toISOString(),
+                        mappedBy: "USR-EXPERT-0001", expiresAt: new Date(Date.now() + 86400000).toISOString(),
+                        historyEventId: "HST-REPORT-OUTPUT-" + Date.now(), reportConnector: state.reportConnector
+                    });
+                    state.performanceReportOutput = outputResult;
+                    versionState.historyEvents = versionState.historyEvents.concat([outputResult.historyEvent]);
+                    state.performanceReportNotice = "기관 양식 매핑과 Demo Report Connector 출력을 완료했습니다.";
+                } catch (error) { state.performanceReportNotice = error.message; }
             }
             if (action && action.dataset.action === "toggle-history") {
                 state.showHistory = !state.showHistory;
