@@ -24,7 +24,8 @@
                 return schedule.unitProjectId === unitProject.unitProjectId;
             });
             var planningRequired = derivedWork.alerts.filter(function (alert) {
-                return alert.unitProjectId === unitProject.unitProjectId;
+                return alert.unitProjectId === unitProject.unitProjectId &&
+                    occurrenceNumber(alert.occurrenceId) > completed;
             }).length;
             var completedRequirements = derivedWork.documentRequirements.filter(function (requirement) {
                 return requirement.unitProjectId === unitProject.unitProjectId &&

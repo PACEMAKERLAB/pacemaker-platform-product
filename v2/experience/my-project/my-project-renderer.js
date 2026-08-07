@@ -121,8 +121,55 @@
             '<div class="recent-change"><span>최근 변경</span><strong>승인된 수정 사업비 산출내역을 현재 예산으로 확정했습니다.</strong><button>전체 이력</button></div></section>';
     }
 
+    function occurrenceBadge(occurrence) {
+        if (occurrence.status === "completed") { return badge("완료", "success"); }
+        if (occurrence.status === "scheduled") { return badge("일정 등록", "info"); }
+        return badge("계획 필요", "warning");
+    }
+
+    function renderPlan(plan) {
+        var lifecycle = plan.lifecycle.map(function (stage) {
+            return '<article class="plan-lifecycle-stage"><div><span>운영 단계</span><strong>' + escapeHtml(stage.title) +
+                '</strong></div><ul>' + stage.tasks.map(function (task) {
+                    return '<li><span class="check-state check-state--pending"></span><strong>' + escapeHtml(task.title) +
+                        '</strong><small>Protocol 기본</small></li>';
+                }).join("") + '</ul></article>';
+        }).join("");
+        var units = plan.unitProjects.map(function (unit) {
+            var preparation = unit.preparationTasks.map(function (task) {
+                return '<li><span class="check-state check-state--pending"></span><strong>' + escapeHtml(task.title) +
+                    '</strong><small>회차마다 확인</small></li>';
+            }).join("");
+            var rounds = unit.occurrences.map(function (occurrence) {
+                return '<button class="plan-round"><span><strong>' + occurrence.round + '회</strong><small>' +
+                    (occurrence.scheduledDate || "일정 미등록") + '</small></span>' + occurrenceBadge(occurrence) +
+                    '<em>준비 ' + occurrence.taskCount + ' · 문서 ' + occurrence.documentCount + '</em></button>';
+            }).join("");
+
+            return '<article class="plan-unit-card"><header><div><span>단위사업</span><h3>' + escapeHtml(unit.title) +
+                '</h3><p>계획 ' + unit.plannedCount + '회 · 완료 ' + unit.completedCount + '회 · 일정 등록 ' + unit.scheduleCount +
+                '회</p></div>' + (unit.planningRequiredCount ? badge("계획 필요 " + unit.planningRequiredCount + "회", "warning") : badge("계획 등록", "success")) +
+                '</header><div class="plan-unit-body"><section><div class="plan-subheading"><strong>회차 공통 준비 체크리스트</strong>' +
+                '<span>확정 Operation 기준</span></div><ol class="unit-checklist plan-checklist">' + preparation +
+                '</ol></section><section><div class="plan-subheading"><strong>전체 회차</strong><span>클릭 시 실행계획 확인</span></div>' +
+                '<div class="plan-round-grid">' + rounds + '</div></section></div></article>';
+        }).join("");
+
+        return '<section class="slide-section"><div class="section-heading"><div><span class="section-kicker">운영계획</span>' +
+            '<h2>단위사업별 전체 운영 체크리스트</h2><p>전체 계획을 먼저 확인하고 현재 단계에서 필요한 항목만 홈의 할 일로 연결합니다.</p></div>' +
+            '<div class="heading-actions"><span class="plan-source">' + escapeHtml(plan.dataNote) + '</span><button class="secondary-button">+ 계획 추가</button></div></div>' +
+            '<div class="plan-summary-strip"><div><span>단위사업</span><strong>' + plan.summary.unitProjectCount + '개</strong></div>' +
+            '<div><span>전체 회차</span><strong>' + plan.summary.completedOccurrenceCount + '/' + plan.summary.plannedOccurrenceCount + '회</strong></div>' +
+            '<div><span>일정 등록</span><strong>' + plan.summary.scheduledOccurrenceCount + '회</strong></div><div><span>계획 필요</span><strong>' +
+            plan.summary.planningRequiredCount + '회</strong></div><div><span>생애주기 기본 할 일</span><strong>' + plan.summary.lifecycleTaskCount +
+            '개</strong></div></div><div class="plan-lifecycle"><div class="plan-subheading"><strong>사업 생애주기 기본 체크리스트</strong>' +
+            '<span>전문가가 확정한 전체 운영기준</span></div><div class="plan-lifecycle-grid">' + lifecycle + '</div></div>' +
+            '<div class="plan-unit-list">' + units + '</div></section>';
+    }
+
     function render(root, state) {
         var content = state.activeTab === "개요" ? renderOverview(state.view) :
+            state.activeTab === "운영계획" ? renderPlan(state.planView) :
             '<section class="slide-section"><div class="panel"><div class="empty-state"><div><strong>' + escapeHtml(state.activeTab) +
             '</strong><p>다음 구현 단계에서 확정 Operation 데이터와 연결됩니다.</p></div></div></div></section>';
         root.innerHTML = '<div class="app-shell">' + renderSidebar() + '<header class="mobile-header"><div class="brand brand--mobile"><div class="brand-mark">P</div><strong>PACEMAKER</strong></div></header>' +

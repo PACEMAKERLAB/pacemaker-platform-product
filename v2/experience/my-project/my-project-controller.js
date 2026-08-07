@@ -35,6 +35,9 @@
             activeTab: "개요",
             view: global.PacemakerV2.Engine.OperationProjection.OverviewProjector.project(
                 operation, derivedWork, executionState
+            ),
+            planView: global.PacemakerV2.Engine.OperationProjection.PlanProjector.project(
+                operation, derivedWork, executionState
             )
         };
 

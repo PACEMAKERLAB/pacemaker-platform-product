@@ -2925,3 +2925,73 @@ button {
         grid-template-columns: 1fr;
     }
 }
+
+.plan-source {
+    color: #6f7d91;
+    font-size: 12px;
+}
+
+.plan-summary-strip {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    margin-bottom: 22px;
+    overflow: hidden;
+    border: 1px solid #dde4ed;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.plan-summary-strip > div {
+    padding: 16px 18px;
+    border-right: 1px solid #e4e9ef;
+}
+
+.plan-summary-strip > div:last-child { border-right: 0; }
+.plan-summary-strip span { display: block; color: #778499; font-size: 11px; }
+.plan-summary-strip strong { display: block; margin-top: 5px; font-size: 18px; }
+
+.plan-lifecycle {
+    margin-bottom: 22px;
+    padding: 20px;
+    border: 1px solid #dde4ed;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.plan-subheading {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.plan-subheading span { color: #7b8798; font-size: 11px; }
+.plan-lifecycle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.plan-lifecycle-stage { padding: 14px; border-radius: 12px; background: #f6f8fb; }
+.plan-lifecycle-stage > div span { display: block; color: #7c8898; font-size: 10px; }
+.plan-lifecycle-stage > div strong { display: block; margin-top: 4px; }
+.plan-lifecycle-stage ul { margin: 12px 0 0; padding: 0; list-style: none; }
+.plan-lifecycle-stage li { display: grid; grid-template-columns: 16px 1fr; gap: 6px; margin-top: 8px; font-size: 11px; }
+.plan-lifecycle-stage li small { grid-column: 2; color: #8a95a4; }
+.plan-unit-list { display: grid; gap: 16px; }
+.plan-unit-card { overflow: hidden; border: 1px solid #dce3eb; border-radius: 16px; background: #fff; }
+.plan-unit-card > header { display: flex; justify-content: space-between; gap: 12px; padding: 18px 20px; border-bottom: 1px solid #e8edf2; }
+.plan-unit-card header span:first-child { color: #7b8797; font-size: 10px; }
+.plan-unit-card h3 { margin: 4px 0; font-size: 18px; }
+.plan-unit-card header p { margin: 0; color: #6f7b8c; font-size: 12px; }
+.plan-unit-body { display: grid; grid-template-columns: .8fr 1.2fr; gap: 20px; padding: 18px 20px; }
+.plan-checklist { margin: 0; }
+.plan-round-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.plan-round { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; padding: 11px; border: 1px solid #e0e6ed; border-radius: 10px; text-align: left; background: #fff; }
+.plan-round span:first-child strong { display: block; }
+.plan-round span:first-child small { display: block; margin-top: 3px; color: #7d899a; }
+.plan-round em { color: #738095; font-size: 10px; font-style: normal; }
+
+@media (max-width: 900px) {
+    .plan-summary-strip { grid-template-columns: repeat(2, 1fr); }
+    .plan-lifecycle-grid, .plan-unit-body { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+    .plan-round-grid { grid-template-columns: repeat(2, 1fr); }
+}
