@@ -52,10 +52,20 @@
             budgetView: initialBudgetView
         };
 
+        function refreshPerformance() {
+            state.performanceView = global.PacemakerV2.Engine.OperationProjection.PerformanceReportProjector.project({
+                operation: operation, overviewView: state.view, documentView: state.documentView,
+                budgetView: state.budgetView, asOfDate: executionState.asOfDate
+            });
+        }
+
+        refreshPerformance();
+
         function refreshBudgetAndOverview() {
             state.budgetView = global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: budgetState });
             executionState.usedBudget = [{ categoryId: "BGT-001", amount: state.budgetView.summary.usedTotal, source: "approved_expense_resolutions" }];
             state.view = global.PacemakerV2.Engine.OperationProjection.OverviewProjector.project(operation, derivedWork, executionState, versionState);
+            refreshPerformance();
         }
 
         root.addEventListener("change", function (event) {
@@ -258,6 +268,7 @@
                 state.executionView = global.PacemakerV2.Engine.OperationProjection.ExecutionProjector.project(
                     operation, derivedWork, executionState
                 );
+                refreshPerformance();
                 state.documentNotice = mapped.sourceAsset.fileName + " 파일을 " + mapped.assetMapping.occurrenceId + "에 매핑했습니다. " +
                     (nextEvidenceWork.summary.autoCompletedCount ? "관련 할 일 " + nextEvidenceWork.summary.autoCompletedCount + "건이 자동 완료됐습니다." : "관련 할 일 상태를 다시 확인했습니다.");
                 state.mappingDraft = null;
@@ -278,6 +289,7 @@
                 state.view = global.PacemakerV2.Engine.OperationProjection.OverviewProjector.project(operation, derivedWork, executionState, versionState);
                 state.documentView = global.PacemakerV2.Engine.OperationProjection.DocumentProjector.project(operation, derivedWork, executionState);
                 state.executionView = global.PacemakerV2.Engine.OperationProjection.ExecutionProjector.project(operation, derivedWork, executionState);
+                refreshPerformance();
                 state.approvalNotice = result.request.title + " 요청을 " + (decision === "approved" ? "승인했습니다." : "반려했습니다. 관련 할 일이 다시 생성됩니다.");
             }
             if (!tab && !action) { return; }

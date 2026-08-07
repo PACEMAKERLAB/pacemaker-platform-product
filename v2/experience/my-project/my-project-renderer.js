@@ -385,6 +385,34 @@
         return '<div class="mapping-backdrop"><section class="mapping-dialog evidence-review-dialog"><header><div><span class="section-kicker">전문가 증빙 검토</span><h2>보탬e 제출자료 확인</h2><p>파일명과 자료를 열어 확인해야 검토를 완료할 수 있습니다.</p></div><button data-action="cancel-evidence-review">×</button></header><div class="evidence-review-summary"><span>필수 ' + review.inspection.requiredCount + '건</span><span>등록 ' + review.inspection.attachedCount + '건</span><span>열람 확인 ' + review.inspection.reviewedCount + '건</span></div><div class="evidence-review-list">' + review.inspection.items.map(function (item) { return '<article class="' + (item.reviewed ? 'is-reviewed' : '') + '"><div><strong>' + e(item.title) + '</strong><small>' + (item.asset ? e(item.asset.fileName) : '파일 누락') + '</small></div>' + (item.asset ? '<button data-action="mark-evidence-reviewed" data-asset-id="' + e(item.asset.sourceAssetId) + '">' + (item.reviewed ? '확인 완료' : '파일 열기·확인') + '</button>' : '<span>보완 필요</span>') + '</article>'; }).join('') + '</div><footer><button class="secondary-button" data-action="cancel-evidence-review">취소</button><button class="primary-button" data-action="confirm-evidence-review"' + (review.inspection.canApprove ? '' : ' disabled') + '>자료 검토 완료·제출자료 생성</button></footer></section></div>';
     }
 
+    function renderPerformanceReport(state) {
+        var report = state.performanceView;
+        var statusLabel = report.reportStatus === "ready" ? "보고서 생성 가능" : "보고 준비 필요";
+        var statusTone = report.reportStatus === "ready" ? "success" : "warning";
+        var blockers = report.blockers.length ? report.blockers.map(function (item) {
+            return '<article><span>조치 필요</span><strong>' + e(item.title) + '</strong></article>';
+        }).join("") : '<article class="report-ready-message"><span>준비 완료</span><strong>보고서 생성 전 조치가 모두 완료됐습니다.</strong></article>';
+        var units = report.unitProjects.map(function (unit) {
+            return '<article class="report-unit-row"><div><strong>' + e(unit.title) + '</strong><span>실행 ' + unit.completedCount + '/' + unit.plannedCount + '회</span></div>' +
+                '<div><span>진행률</span><strong>' + unit.progressRate + '%</strong></div><div><span>증빙</span><strong>' + unit.evidenceAttachedCount + '/' + unit.evidenceRequiredCount + '건</strong></div>' +
+                '<div>' + (unit.evidenceMissingCount ? badge('누락 ' + unit.evidenceMissingCount + '건', 'danger') : badge('정상', 'success')) + '</div></article>';
+        }).join("");
+        var sections = report.reportSections.map(function (section) {
+            var label = section.status === "available" ? "자료 있음" : section.status === "supplement_required" ? "보완 필요" : "대기";
+            var tone = section.status === "available" ? "success" : section.status === "supplement_required" ? "danger" : "warning";
+            return '<article><strong>' + e(section.title) + '</strong>' + badge(label, tone) + '</article>';
+        }).join("");
+        return '<section class="slide-section"><div class="section-heading"><div><span class="section-kicker">성과·보고</span><h2>실적과 보고 준비 현황</h2>' +
+            '<p>확정 Operation의 실행·증빙·예산 데이터를 모아 보고서 작성 전 상태를 확인합니다.</p></div><div class="heading-actions"><span class="plan-source">Operation ' + e(report.operationVersion) + ' 기준</span>' + badge(statusLabel, statusTone) + '</div></div>' +
+            '<div class="report-summary"><div><span>사업 실행</span><strong>' + report.summary.completedExecutionCount + '/' + report.summary.plannedExecutionCount + '회</strong><em>' + report.summary.executionRate + '%</em></div>' +
+            '<div><span>증빙 완성도</span><strong>' + report.summary.evidenceAttachedCount + '/' + report.summary.evidenceRequiredCount + '건</strong><em>' + report.summary.evidenceCompletionRate + '%</em></div>' +
+            '<div><span>사용예산</span><strong>' + money(report.summary.usedBudget) + '</strong><em>집행률 ' + report.summary.budgetUsageRate + '%</em></div>' +
+            '<div><span>보고 전 조치</span><strong>' + report.summary.blockerCount + '종</strong><em>' + statusLabel + '</em></div></div>' +
+            '<section class="report-blocker-panel"><header><div><span class="section-kicker">지금 먼저 처리할 일</span><h2>보고서 생성 전 확인사항</h2></div><strong>' + report.summary.blockerCount + '종</strong></header><div>' + blockers + '</div></section>' +
+            '<section class="report-panel"><header><div><span class="section-kicker">단위사업 실적</span><h2>추진 및 증빙 현황</h2></div></header><div class="report-unit-list">' + units + '</div></section>' +
+            '<section class="report-panel"><header><div><span class="section-kicker">보고서 구성</span><h2>자동 취합 영역</h2></div><button class="secondary-button"' + (report.reportStatus === "ready" ? '' : ' disabled') + '>성과보고서 생성</button></header><div class="report-section-list">' + sections + '</div></section></section>';
+    }
+
     function render(root, state) {
         var content = state.activeTab === "개요" ? renderOverview(state.view, state) :
             state.activeTab === "운영계획" ? renderPlan(state.planView) :
@@ -392,6 +420,7 @@
             state.activeTab === "자료·문서" ? renderDocuments(state.documentView, state) :
             state.activeTab === "요청·승인" ? renderApprovals(state) :
             state.activeTab === "예산" ? renderBudget(state) :
+            state.activeTab === "성과보고" ? renderPerformanceReport(state) :
             '<section class="slide-section"><div class="panel"><div class="empty-state"><div><strong>' + escapeHtml(state.activeTab) +
             '</strong><p>다음 구현 단계에서 확정 Operation 데이터와 연결됩니다.</p></div></div></div></section>';
         root.innerHTML = '<div class="app-shell">' + renderSidebar() + '<header class="mobile-header"><div class="brand brand--mobile"><div class="brand-mark">P</div><strong>PACEMAKER</strong></div></header>' +
