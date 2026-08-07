@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>PACEMAKER v2 Protocol Draft Generation Test</title></head>
+<body>
+    <h1>PACEMAKER v2 Protocol Draft Generation Test</h1>
+    <pre id="protocol-draft-generation-test-result">RUNNING</pre>
+    <script src="../runtime/pacemaker-v2-namespace.js"></script>
+    <script src="../protocol/protocol-draft-schema.js"></script>
+    <script src="../protocol/protocol-source-evidence-model.js"></script>
+    <script src="../protocol/document-requirement-rule-model.js"></script>
+    <script src="../protocol/protocol-draft-model.js"></script>
+    <script src="../protocol/protocol-draft-validator.js"></script>
+    <script src="../engine/protocol-generation/protocol-draft-generator.js"></script>
+    <script src="community-manual-analysis.fixture.js"></script>
+    <script src="protocol-draft-generation.test.js"></script>
+    <script>
+        (function () {
+            var output = document.getElementById("protocol-draft-generation-test-result");
+            try { output.textContent = JSON.stringify(PacemakerV2ProtocolDraftGenerationTest.run(), null, 2); }
+            catch (error) { output.textContent = "FAIL\n" + error.stack; throw error; }
+        }());
+    </script>
+</body>
+</html>
