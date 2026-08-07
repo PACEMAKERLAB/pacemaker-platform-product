@@ -45,6 +45,7 @@
             budgetState: budgetState,
             budgetDraft: null,
             expenseEvidenceReview: null,
+            botameSubmissionPackages: {},
             budgetNotice: null,
             budgetView: initialBudgetView
         };
@@ -121,12 +122,53 @@
                 budgetState.expenseResolutions[expenseIndex] = reviewedExpense.expenseResolution;
                 executionState = reviewedExpense.executionState;
                 versionState.historyEvents = versionState.historyEvents.concat([reviewedExpense.historyEvent]);
+                if (expenseDecision === "approved") {
+                    var reviewedUnit = budgetState.unitProjects.find(function (item) { return item.unitProjectId === reviewedExpense.expenseResolution.unitProjectId; }) || {};
+                    var reviewedCategory = budgetState.categories.find(function (item) { return item.categoryId === reviewedExpense.expenseResolution.categoryId; }) || {};
+                    var packageResult = global.PacemakerV2.Runtime.BotameSubmission.generate({
+                        submissionPackageId: "BSP-" + Date.now(),
+                        expenseResolution: reviewedExpense.expenseResolution,
+                        operationVersion: operation.currentVersion,
+                        projectTitle: operation.projectProfile.displayName || operation.title,
+                        unitProjectTitle: reviewedUnit.title,
+                        categoryTitle: reviewedCategory.title,
+                        generatedAt: new Date().toISOString(),
+                        generatedBy: "USR-EXPERT-0001",
+                        historyEventId: "HST-BOTAME-PACKAGE-" + Date.now()
+                    });
+                    state.botameSubmissionPackages[reviewedExpense.expenseResolution.expenseResolutionId] = packageResult.submissionPackage;
+                    versionState.historyEvents = versionState.historyEvents.concat([packageResult.historyEvent]);
+                }
                 state.evidenceWork = global.PacemakerV2.Runtime.EvidenceWork.execute({ derivedWork: derivedWork, executionState: executionState, previousResult: state.evidenceWork, reconciledAt: new Date().toISOString() });
                 state.documentView = global.PacemakerV2.Engine.OperationProjection.DocumentProjector.project(operation, derivedWork, executionState);
                 state.executionView = global.PacemakerV2.Engine.OperationProjection.ExecutionProjector.project(operation, derivedWork, executionState);
                 refreshBudgetAndOverview();
                 state.expenseEvidenceReview = null;
                 state.budgetNotice = expenseDecision === "approved" ? "자료 검토를 완료했습니다. 보탬e 등록용 제출자료를 생성했습니다." : "자료 보완을 요청했습니다. 보완 할 일이 다시 생성됩니다.";
+            }
+            if (action && action.dataset.action === "download-botame-manifest") {
+                var downloadPackage = state.botameSubmissionPackages[action.dataset.expenseId];
+                if (downloadPackage) {
+                    var manifestPayload = {
+                        submissionPackageId: downloadPackage.submissionPackageId,
+                        expenseResolutionId: downloadPackage.expenseResolutionId,
+                        operationVersion: downloadPackage.operationVersion,
+                        status: downloadPackage.status,
+                        manifest: downloadPackage.manifest,
+                        files: downloadPackage.files,
+                        generatedAt: downloadPackage.generatedAt,
+                        generatedBy: downloadPackage.generatedBy,
+                        note: "실제 원본 파일 묶음은 Storage Connector 연결 후 생성됩니다."
+                    };
+                    var manifestBlob = new Blob([JSON.stringify(manifestPayload, null, 2)], { type: "application/json;charset=utf-8" });
+                    var manifestUrl = URL.createObjectURL(manifestBlob);
+                    var manifestLink = document.createElement("a");
+                    manifestLink.href = manifestUrl;
+                    manifestLink.download = downloadPackage.downloadFileName.replace(/\.zip$/i, "_목록.json");
+                    manifestLink.click();
+                    URL.revokeObjectURL(manifestUrl);
+                    state.budgetNotice = "보탬e 제출자료 목록을 다운로드했습니다. 실제 파일 묶음은 Storage Connector 연결 후 제공됩니다.";
+                }
             }
             if (action && action.dataset.action === "complete-botame-processing") {
                 var readyIndex = budgetState.expenseResolutions.findIndex(function (item) { return item.expenseResolutionId === action.dataset.expenseId; });
