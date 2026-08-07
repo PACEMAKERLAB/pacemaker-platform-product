@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PACEMAKER 전문가 Operation 검토</title>
+    <link rel="stylesheet" href="operation-review-style.css">
+</head>
+<body>
+    <main id="operation-review-app"></main>
+
+    <script src="../../runtime/pacemaker-v2-namespace.js"></script>
+    <script src="../../product/source-asset/source-asset-model.js"></script>
+    <script src="../../operation/operation-schema.js"></script>
+    <script src="../../operation/operation-model.js"></script>
+    <script src="../../operation/operation-validator.js"></script>
+    <script src="../../operation/operation-history-manager.js"></script>
+    <script src="../../operation/operation-version-manager.js"></script>
+    <script src="../../operation/operation-state-machine.js"></script>
+    <script src="../../operation/operation-review-policy.js"></script>
+    <script src="../../operation/operation-review-editor.js"></script>
+    <script src="../../engine/document-analysis/document-analysis-result-model.js"></script>
+    <script src="../../engine/protocol-recommendation/protocol-recommendation-model.js"></script>
+    <script src="../../engine/operation-generation/operation-draft-generator.js"></script>
+    <script src="../../runtime/operation-review-runtime.js"></script>
+    <script src="../../engine/work-derivation/derived-work-model.js"></script>
+    <script src="../../engine/work-derivation/work-derivation-engine.js"></script>
+    <script src="../../runtime/derived-work-runtime.js"></script>
+    <script src="../../tests/community-operation-draft.fixture.js"></script>
+    <script src="operation-review-renderer.js"></script>
+    <script src="operation-review-controller.js"></script>
+    <script>
+        PacemakerV2.Experience.OperationReview.Controller.start({
+            rootId: "operation-review-app",
+            expertId: "USR-EXPERT-0001"
+        });
+    </script>
+</body>
+</html>

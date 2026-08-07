@@ -7,6 +7,7 @@
     "use strict";
 
     global.PacemakerV2 = global.PacemakerV2 || {};
+    global.PacemakerV2.Product = global.PacemakerV2.Product || {};
     global.PacemakerV2.Operation = global.PacemakerV2.Operation || {};
     global.PacemakerV2.Engine = global.PacemakerV2.Engine || {};
     global.PacemakerV2.Runtime = global.PacemakerV2.Runtime || {};
