@@ -8,7 +8,10 @@
         var root = document.getElementById(options.rootId);
         var versionState = global.PacemakerV2CommunityOperationV2Fixture.build("USR-EXPERT-0001");
         var operation = versionState.operation;
-        var executionState = global.PacemakerV2CommunityExecutionStateFixture;
+        var executionState = global.PacemakerV2.Operation.Model.clone(global.PacemakerV2CommunityExecutionStateFixture);
+        executionState.documentReviewStatus = executionState.documentReviewStatus || {};
+        executionState.documentStatus["UNT-002-R006:photo"] = "attached";
+        executionState.documentReviewStatus["UNT-002-R006:photo"] = "pending";
         var derivedWork = global.PacemakerV2.Runtime.DerivedWork.execute(operation, { asOfDate: executionState.asOfDate });
         var evidenceWork = global.PacemakerV2.Runtime.EvidenceWork.execute({
             derivedWork: derivedWork, executionState: executionState, reconciledAt: new Date().toISOString()
@@ -31,6 +34,10 @@
             documentNotice: null,
             mappingDraft: null,
             evidenceWork: evidenceWork
+            ,approvalRequests: global.PacemakerV2CommunityApprovalRequestsFixture.map(function (item) {
+                return global.PacemakerV2.Product.Approval.RequestModel.create(item);
+            }),
+            approvalNotice: null
         };
 
         root.addEventListener("change", function (event) {
@@ -110,6 +117,24 @@
                 state.documentNotice = mapped.sourceAsset.fileName + " 파일을 " + mapped.assetMapping.occurrenceId + "에 매핑했습니다. " +
                     (nextEvidenceWork.summary.autoCompletedCount ? "관련 할 일 " + nextEvidenceWork.summary.autoCompletedCount + "건이 자동 완료됐습니다." : "관련 할 일 상태를 다시 확인했습니다.");
                 state.mappingDraft = null;
+            }
+            if (action && (action.dataset.action === "approve-request" || action.dataset.action === "reject-request")) {
+                var requestIndex = state.approvalRequests.findIndex(function (item) { return item.approvalRequestId === action.dataset.requestId; });
+                var decision = action.dataset.action === "approve-request" ? "approved" : "rejected";
+                var result = global.PacemakerV2.Runtime.Approval.review({
+                    request: state.approvalRequests[requestIndex], decision: decision,
+                    executionState: executionState, reviewedBy: "USR-EXPERT-0001",
+                    reviewedAt: new Date().toISOString(), reviewNote: decision === "rejected" ? "자료 보완 후 다시 요청해주세요." : "확인 완료",
+                    historyEventId: "HST-APPROVAL-" + Date.now()
+                });
+                state.approvalRequests[requestIndex] = result.request;
+                executionState = result.executionState;
+                versionState.historyEvents = versionState.historyEvents.concat([result.historyEvent]);
+                state.evidenceWork = global.PacemakerV2.Runtime.EvidenceWork.execute({ derivedWork: derivedWork, executionState: executionState, previousResult: state.evidenceWork, reconciledAt: new Date().toISOString() });
+                state.view = global.PacemakerV2.Engine.OperationProjection.OverviewProjector.project(operation, derivedWork, executionState, versionState);
+                state.documentView = global.PacemakerV2.Engine.OperationProjection.DocumentProjector.project(operation, derivedWork, executionState);
+                state.executionView = global.PacemakerV2.Engine.OperationProjection.ExecutionProjector.project(operation, derivedWork, executionState);
+                state.approvalNotice = result.request.title + " 요청을 " + (decision === "approved" ? "승인했습니다." : "반려했습니다. 관련 할 일이 다시 생성됩니다.");
             }
             if (!tab && !action) { return; }
             experience.MyProject.Renderer.render(root, state);

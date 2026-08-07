@@ -281,11 +281,37 @@
             escapeHtml(selectedUnit.title) + '</strong><b>→</b><span>자료 상태</span><strong>확인 후 첨부</strong></div><footer><button class="secondary-button" data-action="cancel-mapping">취소</button><button class="primary-button" data-action="confirm-mapping">매핑 확인·저장</button></footer></section></div>';
     }
 
+    function approvalStatus(request) {
+        return request.status === "approved" ? badge("승인", "success") : request.status === "rejected" ? badge("반려", "danger") : badge("확인 대기", "warning");
+    }
+
+    function renderApprovals(state) {
+        var pending = state.approvalRequests.filter(function (item) { return item.status === "pending"; }).length;
+        var cards = state.approvalRequests.map(function (request) {
+            var typeLabel = request.type === "change_plan" ? "변경계획" : "증빙자료";
+            return '<article class="approval-card"><header><div><span class="section-kicker">' + typeLabel + '</span><h2>' + escapeHtml(request.title) +
+                '</h2><p>' + escapeHtml(request.description) + '</p></div>' + approvalStatus(request) + '</header><div class="approval-meta"><span>요청자 <strong>' +
+                escapeHtml(request.requestedBy) + '</strong></span><span>요청일 <strong>' + escapeHtml(request.requestedAt.slice(0, 10)) + '</strong></span><span>처리기한 <strong>' +
+                escapeHtml(request.dueDate || "-") + '</strong></span><span>기준 <strong>' + escapeHtml(request.operationVersion) + '</strong></span></div>' +
+                (request.status === "pending" ? '<footer><button class="secondary-button" data-action="reject-request" data-request-id="' + request.approvalRequestId +
+                '">반려·보완요청</button><button class="primary-button approval-primary" data-action="approve-request" data-request-id="' + request.approvalRequestId +
+                '">승인</button></footer>' : '<footer class="approval-result"><strong>' + escapeHtml(request.reviewNote) + '</strong><span>' + escapeHtml(request.reviewedAt) +
+                ' · ' + escapeHtml(request.reviewedBy) + '</span></footer>') + '</article>';
+        }).join("");
+        return '<section class="slide-section"><div class="section-heading"><div><span class="section-kicker">요청·승인</span><h2>운영 요청과 전문가 확인</h2>' +
+            '<p>변경계획·제출문서·증빙자료를 확인하고 승인 또는 보완 요청합니다.</p></div><span class="plan-source">Operation V002 기준</span></div>' +
+            '<div class="approval-summary"><div><span>전체 요청</span><strong>' + state.approvalRequests.length + '건</strong></div><div><span>확인 대기</span><strong>' + pending +
+            '건</strong></div><div><span>승인</span><strong>' + state.approvalRequests.filter(function (item) { return item.status === "approved"; }).length +
+            '건</strong></div><div><span>반려·보완</span><strong>' + state.approvalRequests.filter(function (item) { return item.status === "rejected"; }).length + '건</strong></div></div>' +
+            (state.approvalNotice ? '<div class="document-notice">' + escapeHtml(state.approvalNotice) + '</div>' : '') + '<div class="approval-list">' + cards + '</div></section>';
+    }
+
     function render(root, state) {
         var content = state.activeTab === "개요" ? renderOverview(state.view, state) :
             state.activeTab === "운영계획" ? renderPlan(state.planView) :
             state.activeTab === "실행" ? renderExecution(state.executionView) :
             state.activeTab === "자료·문서" ? renderDocuments(state.documentView, state) :
+            state.activeTab === "요청·승인" ? renderApprovals(state) :
             '<section class="slide-section"><div class="panel"><div class="empty-state"><div><strong>' + escapeHtml(state.activeTab) +
             '</strong><p>다음 구현 단계에서 확정 Operation 데이터와 연결됩니다.</p></div></div></div></section>';
         root.innerHTML = '<div class="app-shell">' + renderSidebar() + '<header class="mobile-header"><div class="brand brand--mobile"><div class="brand-mark">P</div><strong>PACEMAKER</strong></div></header>' +
