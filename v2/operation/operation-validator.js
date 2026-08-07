@@ -45,6 +45,10 @@
             errors.push("unitProjects must be an array");
         }
 
+        if (!Array.isArray(operation.requiredDocuments)) {
+            errors.push("requiredDocuments must be an array");
+        }
+
         return {
             valid: errors.length === 0,
             errors: errors

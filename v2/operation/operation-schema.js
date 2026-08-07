@@ -24,6 +24,7 @@
         "currentVersion",
         "lifecycle",
         "unitProjects",
+        "requiredDocuments",
         "createdAt",
         "updatedAt"
     ]);

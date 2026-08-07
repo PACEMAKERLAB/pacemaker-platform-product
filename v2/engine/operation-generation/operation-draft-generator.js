@@ -39,6 +39,7 @@
             protocolRecommendation: recommendation,
             lifecycle: analysis.lifecycle,
             unitProjects: analysis.unitProjects,
+            requiredDocuments: analysis.requiredDocuments,
             budget: {
                 approved: analysis.budget.approved || [],
                 used: []

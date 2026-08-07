@@ -27,12 +27,19 @@
             protocolRecommendation: clone(source.protocolRecommendation || null),
             lifecycle: clone(source.lifecycle || []),
             unitProjects: clone(source.unitProjects || []),
+            requiredDocuments: clone(source.requiredDocuments || []),
             budget: clone(source.budget || { approved: [], used: [] }),
             review: {
                 requestedAt: null,
                 reviewedAt: null,
                 reviewerId: null,
-                notes: []
+                notes: [],
+                sectionConfirmations: {
+                    lifecycle: false,
+                    unitProjects: false,
+                    requiredDocuments: false,
+                    approvedBudget: false
+                }
             },
             confirmation: {
                 confirmedAt: null,
