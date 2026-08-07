@@ -111,7 +111,7 @@
         return items.slice(0, 5);
     }
 
-    function project(operation, derivedWork, executionState) {
+    function project(operation, derivedWork, executionState, changeContext) {
         var unitProjects = buildUnitProjects(operation, derivedWork, executionState);
         var budget = buildBudget(operation, executionState);
         var totalPlanned = unitProjects.reduce(function (sum, item) { return sum + item.plannedCount; }, 0);
@@ -121,7 +121,21 @@
         });
         var profile = operation.projectProfile || {};
         var processSteps = profile.processSteps || [];
-        var recentChanges = executionState.recentChanges || [];
+        var historyEvents = changeContext && changeContext.historyEvents || [];
+        var versionHistory = changeContext && changeContext.previousVersions || [];
+        var recentChanges = historyEvents.length ? historyEvents.slice().reverse().map(function (event) {
+            return {
+                historyEventId: event.historyEventId,
+                title: event.eventType === "operation_version_created"
+                    ? event.details.previousVersion + "에서 " + event.details.newVersion + "로 운영계획을 확정했습니다."
+                    : event.reason,
+                changedAt: event.occurredAt,
+                changedBy: event.actorId,
+                eventType: event.eventType,
+                operationVersion: event.operationVersion,
+                details: event.details
+            };
+        }) : (executionState.recentChanges || []);
 
         return {
             operationId: operation.operationId,
@@ -146,6 +160,12 @@
                     : Math.max(currentStageIndex, 0)
             },
             recentChange: recentChanges.length ? recentChanges[0] : null,
+            history: recentChanges,
+            versionSummary: {
+                currentVersion: operation.currentVersion,
+                previousVersionCount: versionHistory.length,
+                requirementCount: (operation.requirementAssignments || []).length
+            },
             lifecycle: operation.lifecycle.map(function (stage, index) {
                 return {
                     stageId: stage.stageId,

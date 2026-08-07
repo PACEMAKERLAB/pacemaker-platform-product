@@ -95,7 +95,7 @@
         }).join("");
     }
 
-    function renderOverview(view) {
+    function renderOverview(view, state) {
         var budget = view.budget[0] || { approvedAmount: 0, usedAmount: 0, remainingAmount: 0, usageRate: 0 };
         var process = view.process.steps.map(function (step, index) {
             var className = index < view.process.current ? " is-complete" : (index === view.process.current ? " is-current" : "");
@@ -109,7 +109,8 @@
         return '<section class="slide-section"><div class="project-snapshot"><div class="snapshot-main"><span class="section-kicker">사업 개요</span>' +
             '<h2>' + escapeHtml(view.subtitle) + '</h2><p>' + escapeHtml(view.summary) + '</p>' +
             '<div class="snapshot-meta"><span>사업기간 <strong>' + date(view.period.startDate) + ' - ' + date(view.period.endDate) + '</strong></span><span>현재단계 <strong>' +
-            escapeHtml(view.currentStageTitle) + '</strong></span><span>담당 <strong>' + escapeHtml(view.manager.name) + '</strong></span></div></div>' +
+            escapeHtml(view.currentStageTitle) + '</strong></span><span>담당 <strong>' + escapeHtml(view.manager.name) + '</strong></span><span>운영기준 <strong>' +
+            escapeHtml(view.versionSummary.currentVersion) + ' · 요구사항 ' + view.versionSummary.requirementCount + '개</strong></span></div></div>' +
             '<div class="budget-summary"><span>예산 집행현황</span><strong>' + budget.usageRate + '%</strong><dl>' +
             '<div><dt>승인예산</dt><dd>' + money(view.totals.approvedBudget) + '</dd></div><div><dt>사용예산</dt><dd>' +
             money(view.totals.usedBudget) + '</dd></div><div><dt>잔여예산</dt><dd>' + money(view.totals.approvedBudget - view.totals.usedBudget) +
@@ -123,7 +124,12 @@
             '<button class="text-button" data-tab="운영계획">운영계획 상세</button></div></div><div class="overview-unit-grid">' + renderUnits(view) + '</div>' +
             '<div class="process-panel"><div class="process-heading"><div><span class="section-kicker">전체 프로세스</span><h2>현재 ‘' + escapeHtml(view.process.steps[view.process.current]) + '’ 단계입니다</h2></div>' +
             '<span>' + (view.process.current + 1) + ' / ' + view.process.steps.length + '</span></div><div class="process-track">' + process + '</div></div>' +
-            '<div class="recent-change"><span>최근 변경</span><strong>' + escapeHtml(view.recentChange ? view.recentChange.title : "최근 변경이 없습니다.") + '</strong><button>전체 이력</button></div></section>';
+            '<div class="recent-change"><span>최근 변경</span><strong>' + escapeHtml(view.recentChange ? view.recentChange.title : "최근 변경이 없습니다.") +
+            '</strong><button data-action="toggle-history">' + (view.history.length ? "전체 이력 " + view.history.length + "건" : "전체 이력") + '</button></div>' +
+            (view.history.length ? '<div class="history-panel' + (state.showHistory ? " is-open" : "") + '">' + view.history.map(function (item) {
+                return '<article><span>' + escapeHtml(item.operationVersion || "-") + '</span><div><strong>' + escapeHtml(item.title) +
+                    '</strong><small>' + escapeHtml(item.changedAt) + ' · ' + escapeHtml(item.changedBy) + '</small></div></article>';
+            }).join("") + '</div>' : '') + '</section>';
     }
 
     function occurrenceBadge(occurrence) {
@@ -166,15 +172,68 @@
             '<div class="plan-summary-strip"><div><span>단위사업</span><strong>' + plan.summary.unitProjectCount + '개</strong></div>' +
             '<div><span>전체 회차</span><strong>' + plan.summary.completedOccurrenceCount + '/' + plan.summary.plannedOccurrenceCount + '회</strong></div>' +
             '<div><span>일정 등록</span><strong>' + plan.summary.scheduledOccurrenceCount + '회</strong></div><div><span>계획 필요</span><strong>' +
-            plan.summary.planningRequiredCount + '회</strong></div><div><span>생애주기 기본 할 일</span><strong>' + plan.summary.lifecycleTaskCount +
+            plan.summary.planningRequiredCount + '회</strong></div><div><span>Protocol 요구사항</span><strong>' + plan.summary.requirementAssignmentCount +
+            '개</strong></div><div><span>생애주기 기본 할 일</span><strong>' + plan.summary.lifecycleTaskCount +
             '개</strong></div></div><div class="plan-lifecycle"><div class="plan-subheading"><strong>사업 생애주기 기본 체크리스트</strong>' +
             '<span>전문가가 확정한 전체 운영기준</span></div><div class="plan-lifecycle-grid">' + lifecycle + '</div></div>' +
             '<div class="plan-unit-list">' + units + '</div></section>';
     }
 
+    function executionStatus(status) {
+        return {
+            completed: badge("완료", "success"),
+            preparing: badge("준비 중", "info"),
+            action_required: badge("조치 필요", "danger"),
+            planning_required: badge("일정 미등록", "warning")
+        }[status];
+    }
+
+    function renderExecution(execution) {
+        var cards = execution.activeSchedules.map(function (schedule) {
+            var preparationRate = schedule.preparation.total
+                ? Math.round((schedule.preparation.done / schedule.preparation.total) * 100)
+                : 0;
+            var missing = schedule.documents.missingTitles.slice(0, 3).map(function (title) {
+                return '<li><span class="check-state check-state--pending"></span><strong>' + escapeHtml(title) +
+                    '</strong><small>미첨부</small></li>';
+            }).join("");
+
+            return '<article class="execution-schedule-card"><button class="execution-schedule-head"><span class="execution-date"><strong>' +
+                escapeHtml(schedule.scheduledDate ? schedule.scheduledDate.slice(8) : "-") + '</strong><small>' +
+                escapeHtml(schedule.scheduledDate ? schedule.scheduledDate.slice(0, 7).replace("-", ".") : "일정 미정") +
+                '</small></span><span><small>' + escapeHtml(schedule.unitProjectTitle) + '</small><strong>' + escapeHtml(schedule.title) +
+                '</strong><em>준비 ' + schedule.preparation.done + '/' + schedule.preparation.total + ' · 문서 ' +
+                schedule.documents.attached + '/' + schedule.documents.total + '</em></span>' + executionStatus(schedule.status) +
+                icon("arrow") + '</button><div class="readiness-bar"><span style="width:' + preparationRate + '%"></span></div>' +
+                '<ol class="schedule-check-preview">' + (missing || '<li><span class="check-state check-state--complete">' + icon("check") +
+                '</span><strong>필요 문서 확인 완료</strong><small>충족</small></li>') + '</ol>' +
+                '<button class="schedule-detail-button">전체 준비항목·서류 확인</button></article>';
+        }).join("") || '<div class="empty-state"><div><strong>추진 중인 일정이 없습니다.</strong></div></div>';
+        var ledgers = execution.units.map(function (unit) {
+            return '<section class="execution-ledger-unit"><div class="execution-section-heading"><div><span class="section-kicker">단위사업</span>' +
+                '<h2>' + escapeHtml(unit.title) + ' 전체 ' + unit.plannedCount + '회</h2></div><span>완료 ' + unit.completedCount +
+                '회</span></div><div class="round-ledger">' + unit.rounds.map(function (round) {
+                    return '<button class="round-item round-item--' + round.status + '"><span><strong>' + round.round + '회차</strong><small>' +
+                        escapeHtml(round.scheduledDate || "일정 미정") + '</small></span>' + executionStatus(round.status) +
+                        '<em>준비 ' + round.preparation.done + '/' + round.preparation.total + ' · 문서 ' + round.documents.attached + '/' +
+                        round.documents.total + '</em></button>';
+                }).join("") + '</div></section>';
+        }).join("");
+
+        return '<section class="slide-section"><div class="section-heading"><div><span class="section-kicker">실행 일정</span>' +
+            '<h2>추진 중인 일정과 준비현황</h2><p>일정마다 준비업무·필요 문서·증빙을 확인하고 빠진 항목을 실행 전에 처리합니다.</p></div>' +
+            '<div class="heading-actions"><span class="plan-source">' + escapeHtml(execution.asOfDate) + ' 기준</span><button class="secondary-button">+ 일정 추가</button></div></div>' +
+            '<div class="execution-metrics"><div><span>전체 실행</span><strong>' + execution.summary.completedCount + '/' + execution.summary.plannedCount +
+            '회</strong></div><div><span>준비 중</span><strong>' + execution.summary.preparingCount + '건</strong></div><div><span>조치 필요</span><strong>' +
+            execution.summary.actionRequiredCount + '건</strong></div><div><span>일정 미등록</span><strong>' + execution.summary.planningRequiredCount +
+            '회</strong></div></div><div class="execution-section-heading"><div><span class="section-kicker">가까운 일정·조치 필요</span><h2>지금 추진 중인 일정</h2></div>' +
+            '<span>조치 필요 일정을 먼저 표시합니다.</span></div><div class="execution-schedule-grid">' + cards + '</div>' + ledgers + '</section>';
+    }
+
     function render(root, state) {
-        var content = state.activeTab === "개요" ? renderOverview(state.view) :
+        var content = state.activeTab === "개요" ? renderOverview(state.view, state) :
             state.activeTab === "운영계획" ? renderPlan(state.planView) :
+            state.activeTab === "실행" ? renderExecution(state.executionView) :
             '<section class="slide-section"><div class="panel"><div class="empty-state"><div><strong>' + escapeHtml(state.activeTab) +
             '</strong><p>다음 구현 단계에서 확정 Operation 데이터와 연결됩니다.</p></div></div></div></section>';
         root.innerHTML = '<div class="app-shell">' + renderSidebar() + '<header class="mobile-header"><div class="brand brand--mobile"><div class="brand-mark">P</div><strong>PACEMAKER</strong></div></header>' +

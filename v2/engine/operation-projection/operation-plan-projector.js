@@ -66,7 +66,8 @@
                 completedOccurrenceCount: units.reduce(function (sum, unit) { return sum + unit.completedCount; }, 0),
                 scheduledOccurrenceCount: units.reduce(function (sum, unit) { return sum + unit.scheduleCount; }, 0),
                 planningRequiredCount: units.reduce(function (sum, unit) { return sum + unit.planningRequiredCount; }, 0),
-                lifecycleTaskCount: operation.lifecycle.reduce(function (sum, stage) { return sum + (stage.tasks || []).length; }, 0)
+                lifecycleTaskCount: operation.lifecycle.reduce(function (sum, stage) { return sum + (stage.tasks || []).length; }, 0),
+                requirementAssignmentCount: (operation.requirementAssignments || []).length
             },
             dataNote: "확정 Operation " + operation.currentVersion + " 기준"
         };

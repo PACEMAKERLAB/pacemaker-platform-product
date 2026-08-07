@@ -2926,6 +2926,30 @@ button {
     }
 }
 
+.execution-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-bottom: 22px;
+    overflow: hidden;
+    border: 1px solid #dde4ed;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.execution-metrics > div { padding: 16px 18px; border-right: 1px solid #e5eaf0; }
+.execution-metrics > div:last-child { border-right: 0; }
+.execution-metrics span { display: block; color: #788598; font-size: 11px; }
+.execution-metrics strong { display: block; margin-top: 5px; font-size: 18px; }
+.execution-ledger-unit { margin-top: 24px; }
+.round-item--action_required { border-color: #f0b4a7; background: #fff7f4; }
+.round-item--preparing { border-color: #a9cae7; background: #f5faff; }
+.round-item--completed { background: #f4faf7; }
+.round-item--planning_required { opacity: .82; }
+
+@media (max-width: 700px) {
+    .execution-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
 .plan-source {
     color: #6f7d91;
     font-size: 12px;
@@ -2933,7 +2957,7 @@ button {
 
 .plan-summary-strip {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     margin-bottom: 22px;
     overflow: hidden;
     border: 1px solid #dde4ed;
@@ -2949,6 +2973,23 @@ button {
 .plan-summary-strip > div:last-child { border-right: 0; }
 .plan-summary-strip span { display: block; color: #778499; font-size: 11px; }
 .plan-summary-strip strong { display: block; margin-top: 5px; font-size: 18px; }
+
+.history-panel {
+    display: none;
+    margin-top: 8px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.history-panel.is-open { display: block; }
+.history-panel article { display: flex; gap: 14px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.history-panel article:last-child { border-bottom: 0; }
+.history-panel article > span { min-width: 54px; color: var(--blue); font-size: 12px; font-weight: 800; }
+.history-panel strong,.history-panel small { display: block; }
+.history-panel strong { font-size: 12px; }
+.history-panel small { margin-top: 5px; color: var(--muted); font-size: 11px; }
 
 .plan-lifecycle {
     margin-bottom: 22px;
