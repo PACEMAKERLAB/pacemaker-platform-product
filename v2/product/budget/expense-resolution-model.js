@@ -8,7 +8,7 @@
         required(input.unitProjectId, "단위사업"); required(input.occurrenceId, "회차"); required(input.categoryId, "예산 지출항목");
         var amount = Number(input.amount);
         if (!Number.isFinite(amount) || amount <= 0) { throw new Error("지출금액은 0보다 커야 합니다."); }
-        if (["pending", "approved"].indexOf(input.status) < 0) { throw new Error("승인상태가 올바르지 않습니다."); }
+        if (["expert_review_pending", "botame_ready", "botame_completed"].indexOf(input.status) < 0) { throw new Error("처리상태가 올바르지 않습니다."); }
         return Object.freeze({
             expenseResolutionId: input.expenseResolutionId,
             categoryId: input.categoryId,

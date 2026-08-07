@@ -107,6 +107,10 @@
         }).join("");
         var completed = view.unitProjects.reduce(function (sum, unit) { return sum + unit.completedCount; }, 0);
         var planned = view.unitProjects.reduce(function (sum, unit) { return sum + unit.plannedCount; }, 0);
+        var priorityCards = view.priorityItems.map(function (item) {
+            var targetTab = item.type === "evidence_missing" ? "자료·문서" : item.type === "planning_required" ? "운영계획" : "요청·승인";
+            return '<button class="overview-priority-item" data-tab="' + targetTab + '"><span>' + (item.priority === "high" ? '우선 확인' : '다음 할 일') + '</span><strong>' + escapeHtml(item.title) + '</strong><small>' + escapeHtml(item.meta) + '</small></button>';
+        }).join("");
 
         return '<section class="slide-section"><div class="project-snapshot"><div class="snapshot-main"><span class="section-kicker">사업 개요</span>' +
             '<h2>' + escapeHtml(view.subtitle) + '</h2><p>' + escapeHtml(view.summary) + '</p>' +
@@ -120,7 +124,7 @@
             '<div class="summary-strip operation-summary-strip"><div><span>전체 진행률</span><strong>' + view.totalProgressRate +
             '%</strong></div><div><span>단위사업</span><strong>' + view.unitProjects.length + '개</strong></div><div><span>전체 실행</span><strong>' +
             completed + '/' + planned + '회</strong></div><div><span>증빙 누락</span><strong>' + view.totals.evidenceMissing +
-            '건</strong></div><div><span>계획 등록 필요</span><strong>' + view.totals.planningRequired + '회</strong></div></div>' +
+            '건</strong></div><div><span>계획 등록 필요</span><strong>' + view.totals.planningRequired + '회</strong></div></div><section class="overview-priority"><div class="overview-units-heading"><div><span class="section-kicker">지금 확인할 일</span><h2>운영 상태에 따라 우선 확인합니다</h2></div><span>' + view.priorityItems.length + '건</span></div><div class="overview-priority-list">' + (priorityCards || '<div class="empty-state"><strong>현재 우선 확인할 일이 없습니다.</strong></div>') + '</div></section>' +
             '<div class="overview-units-heading"><div><span class="section-kicker">단위사업 전체 현황</span><h2>계획과 해야 할 일</h2>' +
             '<p>완료·진행·미착수와 회차별 계획·증빙 상태를 함께 확인합니다.</p></div><div class="inline-actions"><button class="secondary-button">+ 계획 추가</button>' +
             '<button class="text-button" data-tab="운영계획">운영계획 상세</button></div></div><div class="overview-unit-grid">' + renderUnits(view) + '</div>' +
@@ -233,7 +237,8 @@
     }
 
     function documentBadge(document) {
-        var label = { attached: document.reviewStatus === "approved" ? "승인 완료" : "첨부 완료", missing: "누락", planned: "준비 예정", rejected: "보완 필요" }[document.status];
+        var attachedLabel = document.workflowStatus === "evidence_completed" ? "증빙 완료" : document.workflowStatus === "botame_ready" ? "보탬e 등록 준비" : document.reviewStatus === "approved" ? "사전검토 완료" : "등록됨";
+        var label = { attached: attachedLabel, missing: "누락", planned: "준비 예정", rejected: "보완 필요" }[document.status];
         return '<span class="document-chip document-chip--' + document.status + '"><strong>' + escapeHtml(document.title) +
             '</strong><small>' + label + '</small></span>';
     }
@@ -310,13 +315,16 @@
     function renderBudget(state) {
         var view = state.budgetView;
         var unitMode = state.budgetMode !== "category";
-        var pendingExpenses = state.budgetState.expenseResolutions.filter(function (item) { return item.status === "pending"; });
+        var pendingExpenses = state.budgetState.expenseResolutions.filter(function (item) { return item.status === "expert_review_pending"; });
+        var readyExpenses = state.budgetState.expenseResolutions.filter(function (item) { return item.status === "botame_ready"; });
         var pendingPanel = pendingExpenses.length ? '<section class="expense-review-panel"><header><div><span class="section-kicker">전문가 확인</span><h2>확인 대기 지출결의서 ' + pendingExpenses.length + '건</h2></div></header>' + pendingExpenses.map(function (item) {
             var unit = state.budgetState.unitProjects.find(function (candidate) { return candidate.unitProjectId === item.unitProjectId; }) || {};
             var category = state.budgetState.categories.find(function (candidate) { return candidate.categoryId === item.categoryId; }) || {};
             var round = Number((item.occurrenceId || '').split('R').pop());
-            return '<div class="expense-review-row"><div><strong>' + e(unit.title) + ' · ' + round + '회차</strong><span>' + e(category.title) + ' · ' + money(item.amount) + (item.evidenceAttached ? ' · 증빙 완료' : ' · 증빙 누락') + '</span></div><div><button class="secondary-button" data-action="reject-expense-resolution" data-expense-id="' + e(item.expenseResolutionId) + '">반려·보완</button><button class="primary-button" data-action="approve-expense-resolution" data-expense-id="' + e(item.expenseResolutionId) + '">승인</button></div></div>';
+            var attached = (item.evidenceAssets || []).length, required = (item.evidenceRequirements || []).filter(function (requirement) { return requirement.required; }).length;
+            return '<div class="expense-review-row"><div><strong>' + e(unit.title) + ' · ' + round + '회차</strong><span>' + e(category.title) + ' · ' + money(item.amount) + ' · 증빙 등록 ' + attached + '/' + required + '</span></div><div><button class="secondary-button" data-action="reject-expense-resolution" data-expense-id="' + e(item.expenseResolutionId) + '">자료 보완 요청</button><button class="primary-button" data-action="open-evidence-review" data-expense-id="' + e(item.expenseResolutionId) + '">증빙 검토</button></div></div>';
         }).join('') + '</section>' : '';
+        var readyPanel = readyExpenses.length ? '<section class="expense-review-panel botame-ready-panel"><header><div><span class="section-kicker">담당자 처리</span><h2>보탬e 등록 준비 완료 ' + readyExpenses.length + '건</h2></div></header>' + readyExpenses.map(function (item) { var unit = state.budgetState.unitProjects.find(function (candidate) { return candidate.unitProjectId === item.unitProjectId; }) || {}; return '<div class="expense-review-row"><div><strong>' + e(unit.title) + ' · 제출자료 생성 완료</strong><span>' + money(item.amount) + ' · 보탬e 등록 및 이체 후 완료를 눌러주세요.</span></div><div><button class="secondary-button">제출자료 다운로드</button><button class="primary-button" data-action="complete-botame-processing" data-expense-id="' + e(item.expenseResolutionId) + '">보탬e 처리 완료</button></div></div>'; }).join('') + '</section>' : '';
         var cards = unitMode ? view.units.map(function (unit) {
             var occurrences = unit.occurrences.length ? unit.occurrences.map(function (item) {
                 return '<li><strong>' + item.occurrenceNumber + '회차 · ' + e(item.categoryTitle) + '</strong><span>' + money(item.amount) +
@@ -328,19 +336,19 @@
                 '</strong></span><span>잔여예산 <strong>' + money(unit.remainingAmount) + '</strong></span><span>집행률 <strong>' + unit.usageRate + '%</strong></span></div>' +
                 '<div class="budget-progress"><span style="width:' + Math.min(unit.usageRate, 100) + '%"></span></div><div class="budget-breakdown">' +
                 unit.categoryBreakdown.map(function (item) { return '<span>' + e(item.title) + '<strong>' + money(item.usedAmount) + ' / ' + money(item.approvedAmount) + '</strong></span>'; }).join('') +
-                '</div><h3>승인 지출결의서</h3><ul class="budget-occurrence-list">' + occurrences + '</ul></article>';
+                '</div><h3>보탬e 처리 완료 지출결의서</h3><ul class="budget-occurrence-list">' + occurrences + '</ul></article>';
         }).join('') : view.categories.map(function (category) {
             return '<article><header><div><span>예산 지출항목</span><h2>' + e(category.title) + '</h2></div>' +
                 (category.missingEvidenceCount ? badge('증빙 누락 ' + category.missingEvidenceCount + '건', 'danger') : badge('정상', 'success')) + '</header>' +
                 '<div class="budget-values"><span>승인 <strong>' + money(category.approvedAmount) + '</strong></span><span>사용 <strong>' + money(category.usedAmount) +
                 '</strong></span><span>잔여 <strong>' + money(category.remainingAmount) + '</strong></span><span>승인 비율 <strong>' + category.approvedShareRate + '% / 한도 ' + category.maxRate +
-                '%</strong></span></div><div class="budget-progress"><span style="width:' + Math.min(category.usageRate, 100) + '%"></span></div><footer>승인 지출결의서 ' + category.expenseCount + '건 · 집행률 ' + category.usageRate + '%</footer></article>';
+                '%</strong></span></div><div class="budget-progress"><span style="width:' + Math.min(category.usageRate, 100) + '%"></span></div><footer>보탬e 처리 완료 ' + category.expenseCount + '건 · 집행률 ' + category.usageRate + '%</footer></article>';
         }).join('');
         return '<section class="slide-section"><div class="section-heading"><div><span class="section-kicker">예산</span><h2>승인예산과 사용예산</h2>' +
-            '<p>승인된 지출결의서의 단위사업·회차·지출항목을 읽어 자동 집계합니다.</p></div><div class="heading-actions"><span class="plan-source">Operation ' + e(view.operationVersion) + ' 기준</span><button class="secondary-button" data-action="open-expense-resolution">+ 지출결의서 등록</button></div></div>' +
+            '<p>보탬e 처리 완료된 지출결의서만 사용예산에 자동 집계합니다.</p></div><div class="heading-actions"><span class="plan-source">Operation ' + e(view.operationVersion) + ' 기준</span><button class="secondary-button" data-action="open-expense-resolution">+ 지출결의서 등록</button></div></div>' +
             '<div class="budget-control-summary"><div><span>승인예산</span><strong>' + money(view.summary.approvedTotal) + '</strong></div><div><span>사용예산</span><strong>' + money(view.summary.usedTotal) +
             '</strong></div><div><span>잔여예산</span><strong>' + money(view.summary.remainingTotal) + '</strong></div><div><span>집행률</span><strong>' + view.summary.usageRate +
-            '%</strong></div><div><span>증빙 누락</span><strong>' + view.summary.missingEvidenceCount + '건</strong></div></div>' + (state.budgetNotice ? '<div class="document-notice">' + e(state.budgetNotice) + '</div>' : '') + pendingPanel + '<div class="budget-view-switch"><button data-action="change-budget-view" data-budget-view="unit" class="' +
+            '%</strong></div><div><span>증빙 누락</span><strong>' + view.summary.missingEvidenceCount + '건</strong></div></div>' + (state.budgetNotice ? '<div class="document-notice">' + e(state.budgetNotice) + '</div>' : '') + pendingPanel + readyPanel + '<div class="budget-view-switch"><button data-action="change-budget-view" data-budget-view="unit" class="' +
             (unitMode ? 'active' : '') + '">단위사업별</button><button data-action="change-budget-view" data-budget-view="category" class="' + (!unitMode ? 'active' : '') + '">예산항목별</button></div>' +
             '<div class="budget-category-list ' + (unitMode ? 'budget-unit-list' : '') + '">' + cards + '</div></section>';
     }
@@ -354,8 +362,15 @@
             '<div class="mapping-fields budget-entry-fields"><label><span>단위사업</span><select data-budget-field="unitProjectId">' + state.budgetState.unitProjects.map(function (unit) { return '<option value="' + unit.unitProjectId + '"' + (unit.unitProjectId === draft.unitProjectId ? ' selected' : '') + '>' + e(unit.title) + '</option>'; }).join('') +
             '</select></label><label><span>회차</span><select data-budget-field="occurrenceNumber">' + rounds.map(function (round) { return '<option value="' + round + '"' + (String(round) === String(draft.occurrenceNumber) ? ' selected' : '') + '>' + round + '회차</option>'; }).join('') +
             '</select></label><label><span>예산 지출항목</span><select data-budget-field="categoryId">' + state.budgetState.categories.map(function (category) { return '<option value="' + category.categoryId + '"' + (category.categoryId === draft.categoryId ? ' selected' : '') + '>' + e(category.title) + '</option>'; }).join('') +
-            '</select></label><label><span>지출금액</span><input type="number" min="1" step="1000" value="' + e(draft.amount) + '" data-budget-field="amount" placeholder="금액 입력"></label><label><span>승인상태</span><select data-budget-field="status"><option value="pending"' + (draft.status === 'pending' ? ' selected' : '') + '>확인 대기</option><option value="approved"' + (draft.status === 'approved' ? ' selected' : '') + '>승인</option></select></label><label class="budget-evidence-check"><span>증빙자료</span><input type="checkbox" data-budget-field="evidenceAttached"' + (draft.evidenceAttached ? ' checked' : '') + '><strong>증빙 첨부 완료</strong></label></div>' +
-            '<div class="mapping-trace"><span>단위사업</span><strong>' + e(selectedUnit.title) + '</strong><b>→</b><span>회차</span><strong>' + e(draft.occurrenceNumber) + '회차</strong><b>→</b><span>상태</span><strong>' + (draft.status === 'approved' ? '사용예산 반영' : '승인 후 반영') + '</strong></div><footer><button class="secondary-button" data-action="cancel-expense-resolution">취소</button><button class="primary-button" data-action="save-expense-resolution">지출결의서 저장</button></footer></section></div>';
+            '</select></label><label><span>지출금액</span><input type="number" min="1" step="1000" value="' + e(draft.amount) + '" data-budget-field="amount" placeholder="금액 입력"></label><label><span>처리상태</span><strong>자료 준비 중</strong><small>저장 후 필수 증빙자료를 준비합니다.</small></label></div>' +
+            '<div class="mapping-trace"><span>단위사업</span><strong>' + e(selectedUnit.title) + '</strong><b>→</b><span>회차</span><strong>' + e(draft.occurrenceNumber) + '회차</strong><b>→</b><span>다음 단계</span><strong>전문가 자료 검토</strong></div><footer><button class="secondary-button" data-action="cancel-expense-resolution">취소</button><button class="primary-button" data-action="save-expense-resolution">지출결의서 저장</button></footer></section></div>';
+    }
+
+    function renderEvidenceReviewModal(state) {
+        var review = state.expenseEvidenceReview;
+        if (!review) { return ""; }
+        var expense = state.budgetState.expenseResolutions.find(function (item) { return item.expenseResolutionId === review.expenseResolutionId; });
+        return '<div class="mapping-backdrop"><section class="mapping-dialog evidence-review-dialog"><header><div><span class="section-kicker">전문가 증빙 검토</span><h2>보탬e 제출자료 확인</h2><p>파일명과 자료를 열어 확인해야 검토를 완료할 수 있습니다.</p></div><button data-action="cancel-evidence-review">×</button></header><div class="evidence-review-summary"><span>필수 ' + review.inspection.requiredCount + '건</span><span>등록 ' + review.inspection.attachedCount + '건</span><span>열람 확인 ' + review.inspection.reviewedCount + '건</span></div><div class="evidence-review-list">' + review.inspection.items.map(function (item) { return '<article class="' + (item.reviewed ? 'is-reviewed' : '') + '"><div><strong>' + e(item.title) + '</strong><small>' + (item.asset ? e(item.asset.fileName) : '파일 누락') + '</small></div>' + (item.asset ? '<button data-action="mark-evidence-reviewed" data-asset-id="' + e(item.asset.sourceAssetId) + '">' + (item.reviewed ? '확인 완료' : '파일 열기·확인') + '</button>' : '<span>보완 필요</span>') + '</article>'; }).join('') + '</div><footer><button class="secondary-button" data-action="cancel-evidence-review">취소</button><button class="primary-button" data-action="confirm-evidence-review"' + (review.inspection.canApprove ? '' : ' disabled') + '>자료 검토 완료·제출자료 생성</button></footer></section></div>';
     }
 
     function render(root, state) {
@@ -373,7 +388,7 @@
             '<div class="workspace-tools"><span><small>담당</small><strong>' + escapeHtml(state.view.manager.name) + '</strong></span><button class="expert-chat-button"><i></i><span>상담 가능</span><strong>전문가와 대화</strong></button>' +
             '<button class="icon-button">' + icon("more") + '</button></div></header>' + renderTabs(state) +
             '<div class="slide-shell"><button class="slide-arrow slide-arrow--left">' + icon("arrow") + '</button><div class="slide-content">' +
-            content + '</div><button class="slide-arrow slide-arrow--right">' + icon("arrow") + '</button></div></main></div>' + renderMappingModal(state) + renderBudgetModal(state);
+            content + '</div><button class="slide-arrow slide-arrow--right">' + icon("arrow") + '</button></div></main></div>' + renderMappingModal(state) + renderBudgetModal(state) + renderEvidenceReviewModal(state);
     }
 
     experience.MyProject.Renderer = Object.freeze({ render: render });

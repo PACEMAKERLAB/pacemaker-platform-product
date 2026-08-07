@@ -12,11 +12,13 @@
         executionState.documentReviewStatus = executionState.documentReviewStatus || {};
         executionState.documentStatus["UNT-002-R006:photo"] = "attached";
         executionState.documentReviewStatus["UNT-002-R006:photo"] = "pending";
+        var budgetState = JSON.parse(JSON.stringify(global.PacemakerV2CommunityBudgetStateFixture));
+        var initialBudgetView = global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: budgetState });
+        executionState.usedBudget = [{ categoryId: "BGT-001", amount: initialBudgetView.summary.usedTotal, source: "approved_expense_resolutions" }];
         var derivedWork = global.PacemakerV2.Runtime.DerivedWork.execute(operation, { asOfDate: executionState.asOfDate });
         var evidenceWork = global.PacemakerV2.Runtime.EvidenceWork.execute({
             derivedWork: derivedWork, executionState: executionState, reconciledAt: new Date().toISOString()
         });
-        var budgetState = JSON.parse(JSON.stringify(global.PacemakerV2CommunityBudgetStateFixture));
         var state = {
             activeTab: "개요",
             showHistory: false,
@@ -42,9 +44,16 @@
             budgetMode: "unit",
             budgetState: budgetState,
             budgetDraft: null,
+            expenseEvidenceReview: null,
             budgetNotice: null,
-            budgetView: global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: budgetState })
+            budgetView: initialBudgetView
         };
+
+        function refreshBudgetAndOverview() {
+            state.budgetView = global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: budgetState });
+            executionState.usedBudget = [{ categoryId: "BGT-001", amount: state.budgetView.summary.usedTotal, source: "approved_expense_resolutions" }];
+            state.view = global.PacemakerV2.Engine.OperationProjection.OverviewProjector.project(operation, derivedWork, executionState, versionState);
+        }
 
         root.addEventListener("change", function (event) {
             if (state.budgetDraft && event.target.dataset.budgetField) {
@@ -69,7 +78,7 @@
             if (tab) { state.activeTab = tab.dataset.tab; }
             if (action && action.dataset.action === "change-budget-view") { state.budgetMode = action.dataset.budgetView; }
             if (action && action.dataset.action === "open-expense-resolution") {
-                state.budgetDraft = { unitProjectId: budgetState.unitProjects[0].unitProjectId, occurrenceNumber: "1", categoryId: budgetState.categories[0].categoryId, amount: "", status: "pending", evidenceAttached: false };
+                state.budgetDraft = { unitProjectId: budgetState.unitProjects[0].unitProjectId, occurrenceNumber: "1", categoryId: budgetState.categories[0].categoryId, amount: "", status: "expert_review_pending", evidenceAttached: false };
                 state.budgetNotice = null;
             }
             if (action && action.dataset.action === "cancel-expense-resolution") { state.budgetDraft = null; }
@@ -82,17 +91,29 @@
                         evidenceAttached: state.budgetDraft.evidenceAttached, registeredAt: new Date().toISOString(), registeredBy: "USR-EXPERT-0001"
                     });
                     budgetState.expenseResolutions.push(expense);
-                    state.budgetView = global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: budgetState });
+                    refreshBudgetAndOverview();
                     state.budgetNotice = (expense.status === "approved" ? "승인된" : "확인 대기") + " 지출결의서를 등록했습니다.";
                     state.budgetDraft = null;
                 } catch (error) { state.budgetNotice = error.message; }
             }
-            if (action && (action.dataset.action === "approve-expense-resolution" || action.dataset.action === "reject-expense-resolution")) {
-                var expenseIndex = budgetState.expenseResolutions.findIndex(function (item) { return item.expenseResolutionId === action.dataset.expenseId; });
-                var expenseDecision = action.dataset.action === "approve-expense-resolution" ? "approved" : "rejected";
+            if (action && action.dataset.action === "open-evidence-review") {
+                var reviewExpense = budgetState.expenseResolutions.find(function (item) { return item.expenseResolutionId === action.dataset.expenseId; });
+                state.expenseEvidenceReview = { expenseResolutionId: reviewExpense.expenseResolutionId, reviewedAssetIds: [], inspection: global.PacemakerV2.Runtime.ExpenseResolutionReview.inspect(reviewExpense, []) };
+            }
+            if (action && action.dataset.action === "mark-evidence-reviewed" && state.expenseEvidenceReview) {
+                if (state.expenseEvidenceReview.reviewedAssetIds.indexOf(action.dataset.assetId) < 0) { state.expenseEvidenceReview.reviewedAssetIds.push(action.dataset.assetId); }
+                var markedExpense = budgetState.expenseResolutions.find(function (item) { return item.expenseResolutionId === state.expenseEvidenceReview.expenseResolutionId; });
+                state.expenseEvidenceReview.inspection = global.PacemakerV2.Runtime.ExpenseResolutionReview.inspect(markedExpense, state.expenseEvidenceReview.reviewedAssetIds);
+            }
+            if (action && action.dataset.action === "cancel-evidence-review") { state.expenseEvidenceReview = null; }
+            if (action && (action.dataset.action === "confirm-evidence-review" || action.dataset.action === "reject-expense-resolution")) {
+                var reviewExpenseId = action.dataset.action === "confirm-evidence-review" ? state.expenseEvidenceReview.expenseResolutionId : action.dataset.expenseId;
+                var expenseIndex = budgetState.expenseResolutions.findIndex(function (item) { return item.expenseResolutionId === reviewExpenseId; });
+                var expenseDecision = action.dataset.action === "confirm-evidence-review" ? "approved" : "rejected";
                 var reviewedExpense = global.PacemakerV2.Runtime.ExpenseResolutionReview.review({
                     expenseResolution: budgetState.expenseResolutions[expenseIndex], decision: expenseDecision,
                     executionState: executionState,
+                    evidenceReview: state.expenseEvidenceReview && state.expenseEvidenceReview.inspection,
                     reviewedAt: new Date().toISOString(), reviewedBy: "USR-EXPERT-0001",
                     reviewNote: expenseDecision === "approved" ? "집행내역 확인 완료" : "증빙자료 보완 후 다시 요청해주세요.",
                     historyEventId: "HST-EXPENSE-" + Date.now()
@@ -100,12 +121,21 @@
                 budgetState.expenseResolutions[expenseIndex] = reviewedExpense.expenseResolution;
                 executionState = reviewedExpense.executionState;
                 versionState.historyEvents = versionState.historyEvents.concat([reviewedExpense.historyEvent]);
-                state.budgetView = global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: budgetState });
                 state.evidenceWork = global.PacemakerV2.Runtime.EvidenceWork.execute({ derivedWork: derivedWork, executionState: executionState, previousResult: state.evidenceWork, reconciledAt: new Date().toISOString() });
                 state.documentView = global.PacemakerV2.Engine.OperationProjection.DocumentProjector.project(operation, derivedWork, executionState);
-                state.view = global.PacemakerV2.Engine.OperationProjection.OverviewProjector.project(operation, derivedWork, executionState, versionState);
                 state.executionView = global.PacemakerV2.Engine.OperationProjection.ExecutionProjector.project(operation, derivedWork, executionState);
-                state.budgetNotice = "지출결의서를 " + (expenseDecision === "approved" ? "승인하여 사용예산에 반영했습니다." : "반려했습니다. 보완 할 일이 다시 생성됩니다.");
+                refreshBudgetAndOverview();
+                state.expenseEvidenceReview = null;
+                state.budgetNotice = expenseDecision === "approved" ? "자료 검토를 완료했습니다. 보탬e 등록용 제출자료를 생성했습니다." : "자료 보완을 요청했습니다. 보완 할 일이 다시 생성됩니다.";
+            }
+            if (action && action.dataset.action === "complete-botame-processing") {
+                var readyIndex = budgetState.expenseResolutions.findIndex(function (item) { return item.expenseResolutionId === action.dataset.expenseId; });
+                var completedBotame = global.PacemakerV2.Runtime.BotameCompletion.complete({ expenseResolution: budgetState.expenseResolutions[readyIndex], executionState: executionState, completedAt: new Date().toISOString(), completedBy: "USR-CUSTOMER-0001", historyEventId: "HST-BOTAME-" + Date.now() });
+                budgetState.expenseResolutions[readyIndex] = completedBotame.expenseResolution;
+                executionState = completedBotame.executionState;
+                versionState.historyEvents = versionState.historyEvents.concat([completedBotame.historyEvent]);
+                refreshBudgetAndOverview();
+                state.budgetNotice = "보탬e 처리 완료로 표시했습니다. 사용예산과 증빙 완료 상태에 반영했습니다.";
             }
             if (action && action.dataset.action === "toggle-history") {
                 state.showHistory = !state.showHistory;

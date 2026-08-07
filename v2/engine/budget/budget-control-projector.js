@@ -6,7 +6,7 @@
 
     function sum(list, key) { return list.reduce(function (total, item) { return total + item[key]; }, 0); }
     function approvedExpenses(state, filter) {
-        return state.expenseResolutions.filter(function (item) { return item.status === "approved" && filter(item); });
+        return state.expenseResolutions.filter(function (item) { return item.status === "botame_completed" && filter(item); });
     }
     function project(input) {
         var state = input.budgetState;
@@ -54,7 +54,7 @@
                 usedTotal: usedTotal,
                 remainingTotal: approvedTotal - usedTotal,
                 usageRate: approvedTotal ? Math.round(usedTotal / approvedTotal * 100) : 0,
-                pendingExpenseCount: state.expenseResolutions.filter(function (item) { return item.status === "pending"; }).length,
+                pendingExpenseCount: state.expenseResolutions.filter(function (item) { return item.status === "expert_review_pending" || item.status === "botame_ready"; }).length,
                 missingEvidenceCount: categories.reduce(function (total, item) { return total + item.missingEvidenceCount; }, 0),
                 limitWarningCount: categories.filter(function (item) { return item.limitExceeded; }).length
             }

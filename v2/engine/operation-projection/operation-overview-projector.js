@@ -32,7 +32,8 @@
                     occurrenceNumber(requirement.occurrenceId) <= completed;
             });
             var attached = completedRequirements.filter(function (requirement) {
-                return executionState.documentStatus[documentStatusKey(requirement)] === "attached";
+                var key = documentStatusKey(requirement);
+                return executionState.documentStatus[key] === "attached" && (executionState.documentReviewStatus || {})[key] !== "rejected";
             }).length;
 
             return {

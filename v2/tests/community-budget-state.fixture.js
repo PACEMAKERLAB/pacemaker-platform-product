@@ -15,11 +15,23 @@
             { categoryId: "BGT-104", title: "일반운영비", approvedAmount: 3000000, maxRate: 15, unitAllocations: { "UNT-001": 500000, "UNT-002": 1000000, "UNT-003": 1500000 } }
         ],
         expenseResolutions: [
-            { expenseResolutionId: "EXP-001", categoryId: "BGT-101", unitProjectId: "UNT-002", occurrenceId: "UNT-002-R001", amount: 1600000, status: "approved", evidenceAttached: true },
-            { expenseResolutionId: "EXP-002", categoryId: "BGT-101", unitProjectId: "UNT-002", occurrenceId: "UNT-002-R002", amount: 1600000, status: "approved", evidenceAttached: true },
-            { expenseResolutionId: "EXP-003", categoryId: "BGT-102", unitProjectId: "UNT-001", occurrenceId: "UNT-001-R001", amount: 2100000, status: "approved", evidenceAttached: true },
-            { expenseResolutionId: "EXP-004", categoryId: "BGT-103", unitProjectId: "UNT-002", occurrenceId: "UNT-002-R003", amount: 1700000, status: "approved", evidenceAttached: false },
-            { expenseResolutionId: "EXP-005", categoryId: "BGT-104", unitProjectId: "UNT-002", occurrenceId: "UNT-002-R004", amount: 600000, status: "pending", evidenceAttached: true }
+            { expenseResolutionId: "EXP-001", categoryId: "BGT-101", unitProjectId: "UNT-002", occurrenceId: "UNT-002-R001", amount: 1600000, status: "botame_completed", evidenceAttached: true },
+            { expenseResolutionId: "EXP-002", categoryId: "BGT-101", unitProjectId: "UNT-002", occurrenceId: "UNT-002-R002", amount: 1600000, status: "botame_completed", evidenceAttached: true },
+            { expenseResolutionId: "EXP-003", categoryId: "BGT-102", unitProjectId: "UNT-001", occurrenceId: "UNT-001-R001", amount: 2100000, status: "botame_completed", evidenceAttached: true },
+            { expenseResolutionId: "EXP-004", categoryId: "BGT-103", unitProjectId: "UNT-002", occurrenceId: "UNT-002-R003", amount: 1700000, status: "botame_completed", evidenceAttached: false },
+            { expenseResolutionId: "EXP-005", categoryId: "BGT-104", unitProjectId: "UNT-002", occurrenceId: "UNT-002-R004", amount: 600000, status: "expert_review_pending", evidenceAttached: true,
+                evidenceRequirements: [
+                    { documentType: "expense-resolution", title: "지출결의서", required: true },
+                    { documentType: "expense-approval", title: "지출품의서", required: true },
+                    { documentType: "receipt", title: "영수증·세금계산서", required: true },
+                    { documentType: "transfer-proof", title: "이체확인증", required: true }
+                ],
+                evidenceAssets: [
+                    { sourceAssetId: "AST-EXP-005-01", documentType: "expense-resolution", fileName: "소통활동_4회차_지출결의서.pdf", storageReference: "browser-session://expense-resolution.pdf" },
+                    { sourceAssetId: "AST-EXP-005-02", documentType: "expense-approval", fileName: "소통활동_4회차_지출품의서.pdf", storageReference: "browser-session://expense-approval.pdf" },
+                    { sourceAssetId: "AST-EXP-005-03", documentType: "receipt", fileName: "일반운영비_영수증.pdf", storageReference: "browser-session://receipt.pdf" },
+                    { sourceAssetId: "AST-EXP-005-04", documentType: "transfer-proof", fileName: "일반운영비_이체확인증.pdf", storageReference: "browser-session://transfer-proof.pdf" }
+                ] }
         ]
     });
 }(typeof globalThis !== "undefined" ? globalThis : this));

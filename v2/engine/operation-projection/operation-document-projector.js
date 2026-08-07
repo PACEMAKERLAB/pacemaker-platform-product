@@ -12,7 +12,8 @@ var schedule=derivedWork.schedules.find(function(item){return item.occurrenceId=
 var documents=derivedWork.documentRequirements.filter(function(item){return item.occurrenceId===occurrenceId;}).map(function(requirement){
 var stored=executionState.documentStatus[key(requirement)];
 var review=(executionState.documentReviewStatus||{})[key(requirement)];
-return {documentRequirementId:requirement.documentRequirementId,documentType:requirement.documentType,title:requirement.title,reviewStatus:review||null,status:review==="rejected"?"rejected":stored==="attached"?"attached":round<=completed?"missing":"planned"};
+var workflow=(executionState.documentWorkflowStatus||{})[key(requirement)];
+return {documentRequirementId:requirement.documentRequirementId,documentType:requirement.documentType,title:requirement.title,reviewStatus:review||null,workflowStatus:workflow||null,status:review==="rejected"?"rejected":stored==="attached"?"attached":round<=completed?"missing":"planned"};
 });
 occurrences.push({occurrenceId:occurrenceId,round:round,scheduledDate:schedule?schedule.scheduledDate:null,executionStatus:round<=completed?"completed":schedule?"scheduled":"planning_required",documents:documents,attachedCount:documents.filter(function(item){return item.status==="attached";}).length,missingCount:documents.filter(function(item){return item.status==="missing";}).length});
 }
