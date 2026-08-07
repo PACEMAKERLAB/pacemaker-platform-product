@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PACEMAKER v2 Derived Work Generation Test</title>
+</head>
+<body>
+    <h1>PACEMAKER v2 Derived Work Generation Test</h1>
+    <pre id="derived-work-generation-test-result">RUNNING</pre>
+
+    <script src="../runtime/pacemaker-v2-namespace.js"></script>
+    <script src="../product/source-asset/source-asset-model.js"></script>
+    <script src="../operation/operation-schema.js"></script>
+    <script src="../operation/operation-model.js"></script>
+    <script src="../operation/operation-validator.js"></script>
+    <script src="../operation/operation-history-manager.js"></script>
+    <script src="../operation/operation-version-manager.js"></script>
+    <script src="../operation/operation-state-machine.js"></script>
+    <script src="../operation/operation-review-policy.js"></script>
+    <script src="../operation/operation-review-editor.js"></script>
+    <script src="../engine/document-analysis/document-analysis-result-model.js"></script>
+    <script src="../engine/protocol-recommendation/protocol-recommendation-model.js"></script>
+    <script src="../engine/operation-generation/operation-draft-generator.js"></script>
+    <script src="../runtime/operation-review-runtime.js"></script>
+    <script src="../engine/work-derivation/derived-work-model.js"></script>
+    <script src="../engine/work-derivation/work-derivation-engine.js"></script>
+    <script src="../runtime/derived-work-runtime.js"></script>
+    <script src="community-operation-draft.fixture.js"></script>
+    <script src="derived-work-generation.test.js"></script>
+    <script>
+        (function () {
+            "use strict";
+
+            var output = document.getElementById("derived-work-generation-test-result");
+
+            try {
+                output.textContent = JSON.stringify(
+                    PacemakerV2DerivedWorkGenerationTest.run(),
+                    null,
+                    2
+                );
+            } catch (error) {
+                output.textContent = "FAIL\n" + error.stack;
+                throw error;
+            }
+        }());
+    </script>
+</body>
+</html>

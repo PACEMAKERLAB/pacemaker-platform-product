@@ -31,13 +31,56 @@
                 endDate: "2026-11-30"
             },
             lifecycle: [
-                { stageId: "STG-01", title: "교부 및 착수", order: 1 },
-                { stageId: "STG-02", title: "사업 실행", order: 2 },
-                { stageId: "STG-03", title: "성과 및 정산", order: 3 }
+                {
+                    stageId: "STG-01",
+                    title: "교부 및 착수",
+                    order: 1,
+                    tasks: [
+                        { taskId: "LFT-001", title: "보조금 교부 상태 확인" },
+                        { taskId: "LFT-002", title: "승인 계획과 예산 확인" }
+                    ]
+                },
+                {
+                    stageId: "STG-02",
+                    title: "사업 실행",
+                    order: 2,
+                    tasks: [
+                        { taskId: "LFT-003", title: "단위사업별 실행 현황 확인" }
+                    ]
+                },
+                {
+                    stageId: "STG-03",
+                    title: "성과 및 정산",
+                    order: 3,
+                    tasks: [
+                        { taskId: "LFT-004", title: "성과자료와 정산자료 확인" }
+                    ]
+                }
             ],
             unitProjects: [
-                { unitProjectId: "UNT-001", title: "마을 소식지", plannedCount: 3 },
-                { unitProjectId: "UNT-002", title: "소통활동", plannedCount: 12 }
+                {
+                    unitProjectId: "UNT-001",
+                    title: "마을 소식지",
+                    plannedCount: 3,
+                    occurrenceDates: ["2026-07-31", "2026-08-31"],
+                    preparationTasks: [
+                        { taskCode: "prepare-content", title: "소식지 원고와 구성 준비" },
+                        { taskCode: "confirm-production", title: "제작 일정과 담당자 확인" }
+                    ],
+                    requiredDocumentTypes: ["activity-plan", "photo", "expense-resolution"]
+                },
+                {
+                    unitProjectId: "UNT-002",
+                    title: "소통활동",
+                    plannedCount: 12,
+                    occurrenceDates: ["2026-06-20", "2026-07-18"],
+                    preparationTasks: [
+                        { taskCode: "confirm-instructor", title: "강사 또는 자체 진행 여부 확인" },
+                        { taskCode: "prepare-attendance", title: "참석자 서명부 준비" },
+                        { taskCode: "prepare-photo", title: "활동 사진 촬영 담당 확인" }
+                    ],
+                    requiredDocumentTypes: ["attendance", "photo", "expense-resolution"]
+                }
             ],
             budget: {
                 approved: [
