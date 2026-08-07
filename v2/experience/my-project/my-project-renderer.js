@@ -233,7 +233,7 @@
     }
 
     function documentBadge(document) {
-        var label = { attached: "첨부 완료", missing: "누락", planned: "준비 예정" }[document.status];
+        var label = { attached: document.reviewStatus === "approved" ? "승인 완료" : "첨부 완료", missing: "누락", planned: "준비 예정", rejected: "보완 필요" }[document.status];
         return '<span class="document-chip document-chip--' + document.status + '"><strong>' + escapeHtml(document.title) +
             '</strong><small>' + label + '</small></span>';
     }

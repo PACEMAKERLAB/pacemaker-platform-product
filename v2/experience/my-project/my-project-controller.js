@@ -92,12 +92,19 @@
                 var expenseDecision = action.dataset.action === "approve-expense-resolution" ? "approved" : "rejected";
                 var reviewedExpense = global.PacemakerV2.Runtime.ExpenseResolutionReview.review({
                     expenseResolution: budgetState.expenseResolutions[expenseIndex], decision: expenseDecision,
+                    executionState: executionState,
                     reviewedAt: new Date().toISOString(), reviewedBy: "USR-EXPERT-0001",
                     reviewNote: expenseDecision === "approved" ? "집행내역 확인 완료" : "증빙자료 보완 후 다시 요청해주세요.",
                     historyEventId: "HST-EXPENSE-" + Date.now()
                 });
                 budgetState.expenseResolutions[expenseIndex] = reviewedExpense.expenseResolution;
+                executionState = reviewedExpense.executionState;
+                versionState.historyEvents = versionState.historyEvents.concat([reviewedExpense.historyEvent]);
                 state.budgetView = global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: budgetState });
+                state.evidenceWork = global.PacemakerV2.Runtime.EvidenceWork.execute({ derivedWork: derivedWork, executionState: executionState, previousResult: state.evidenceWork, reconciledAt: new Date().toISOString() });
+                state.documentView = global.PacemakerV2.Engine.OperationProjection.DocumentProjector.project(operation, derivedWork, executionState);
+                state.view = global.PacemakerV2.Engine.OperationProjection.OverviewProjector.project(operation, derivedWork, executionState, versionState);
+                state.executionView = global.PacemakerV2.Engine.OperationProjection.ExecutionProjector.project(operation, derivedWork, executionState);
                 state.budgetNotice = "지출결의서를 " + (expenseDecision === "approved" ? "승인하여 사용예산에 반영했습니다." : "반려했습니다. 보완 할 일이 다시 생성됩니다.");
             }
             if (action && action.dataset.action === "toggle-history") {

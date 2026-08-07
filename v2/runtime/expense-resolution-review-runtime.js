@@ -2,6 +2,7 @@
 (function (global) {
     "use strict";
     var runtime = global.PacemakerV2.Runtime;
+    function clone(value) { return JSON.parse(JSON.stringify(value)); }
     function review(input) {
         if (!input.expenseResolution || input.expenseResolution.status !== "pending") { throw new Error("확인 대기 지출결의서만 처리할 수 있습니다."); }
         if (["approved", "rejected"].indexOf(input.decision) < 0) { throw new Error("승인 또는 반려 결정을 선택해야 합니다."); }
@@ -11,8 +12,16 @@
             reviewedBy: input.reviewedBy,
             reviewNote: input.reviewNote || ""
         }));
+        var executionState = clone(input.executionState || {});
+        var documentKey = reviewed.occurrenceId + ":expense-resolution";
+        executionState.documentStatus = executionState.documentStatus || {};
+        executionState.documentReviewStatus = executionState.documentReviewStatus || {};
+        executionState.documentStatus[documentKey] = "attached";
+        executionState.documentReviewStatus[documentKey] = input.decision === "approved" ? "approved" : "rejected";
         return Object.freeze({
             expenseResolution: reviewed,
+            executionState: executionState,
+            documentKey: documentKey,
             historyEvent: Object.freeze({ historyEventId: input.historyEventId, eventType: "expense_resolution_" + input.decision, targetId: reviewed.expenseResolutionId, occurredAt: input.reviewedAt, actorId: input.reviewedBy, note: reviewed.reviewNote }),
             workAction: input.decision === "approved" ? "complete" : "reopen"
         });
