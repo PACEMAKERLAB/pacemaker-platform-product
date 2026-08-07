@@ -68,7 +68,8 @@
             action: "add",
             item: {
                 documentType: "change-plan",
-                title: "변경계획서"
+                title: "변경계획서", required: true, purpose: "계획 변경·기관 제출", botameSubmission: false,
+                unitProjectId: "UNT-001", occurrenceScope: "all", categoryId: "all", source: "expert_added"
             },
             expertId: "USR-EXPERT-0001",
             at: "2026-08-07T11:21:00.000Z"
@@ -98,6 +99,8 @@
         assert(session.operation.currentVersion === "V001", "first expert confirmation must create V001");
         assert(session.operation.unitProjects[0].plannedCount === 2, "expert edit must remain");
         assert(session.operation.requiredDocuments.length === 5, "expert document addition must remain");
+        assert(session.operation.requiredDocuments[4].unitProjectId === "UNT-001", "document scope must remain");
+        assert(session.operation.requiredDocuments[4].purpose === "계획 변경·기관 제출", "document purpose must remain");
         assert(session.historyEvents.length === 9, "review actions must create history events");
 
         return {
@@ -108,6 +111,8 @@
             reviewedSections: sections.length,
             unitProjectTitle: session.operation.unitProjects[0].title,
             requiredDocumentCount: session.operation.requiredDocuments.length,
+            documentScope: session.operation.requiredDocuments[4].unitProjectId,
+            documentPurpose: session.operation.requiredDocuments[4].purpose,
             historyEventCount: session.historyEvents.length
         };
     }

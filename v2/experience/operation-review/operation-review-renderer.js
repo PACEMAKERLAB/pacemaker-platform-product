@@ -12,7 +12,7 @@
     var SECTION_META = {
         lifecycle: { title: "사업 생애주기", description: "운영 단계와 단계별 기본 할 일을 확인합니다." },
         unitProjects: { title: "단위사업과 회차", description: "사업별 계획 횟수와 준비 기준을 확인합니다." },
-        requiredDocuments: { title: "필요 문서와 증빙", description: "기관 제출서류와 회차별 증빙 기준을 확인합니다." },
+        requiredDocuments: { title: "필요 문서·증빙 기준", description: "문서 용도와 적용 범위, 보탬e 제출 여부를 함께 확정합니다." },
         approvedBudget: { title: "승인예산", description: "항목별 승인금액과 집행 통제 기준을 확인합니다." }
     };
 
@@ -56,7 +56,7 @@
         }
 
         if (section === "requiredDocuments") {
-            return item.documentType;
+            return (item.required === false ? "선택" : "필수") + " · " + (item.purpose || "운영 증빙") + " · 단위사업 " + (item.unitProjectId || "all") + " · 회차 " + (item.occurrenceScope || "all") + " · 예산 " + (item.categoryId || "all") + " · " + (item.botameSubmission ? "보탬e 제출" : "내부 보관");
         }
 
         return formatMoney(item.amount);
@@ -128,7 +128,7 @@
             '<div class="summary-card"><span>승인예산</span><strong>', formatMoney(operation.budget.approved.reduce(function (sum, item) { return sum + Number(item.amount || 0); }, 0)), '</strong></div>',
             '</div>',
             state.error ? '<div class="error-message">' + escapeHtml(state.error) + '</div>' : '',
-            '<div class="notice"><strong>확정 전 확인:</strong> AI 추천 내용은 공식 Operation이 아닙니다. 수정한 영역은 다시 확인해야 하며, 네 영역이 모두 확인되어야 V001을 생성할 수 있습니다.</div>',
+            '<div class="notice"><strong>확정 전 확인:</strong> AI 추천 내용은 공식 Operation이 아닙니다. 필요 문서·증빙 기준을 포함한 네 영역이 모두 확인되어야 V001을 생성할 수 있습니다.</div>',
             '<div class="review-grid"><div>',
             sections.map(function (section, index) { return renderSection(operation, section, index); }).join(""),
             '<div class="final-action"><div><strong>Operation 확정</strong><p>확정 후 할 일·일정·문서·체크리스트가 자동 생성됩니다.</p></div>',

@@ -24,6 +24,9 @@
             createdBy: expertId,
             createdAt: "2026-08-07T13:00:00.000Z"
         });
+        draft.requiredDocuments = draft.requiredDocuments.map(function (document) {
+            return Object.assign({}, document, { required: true, purpose: "운영·예산 증빙", botameSubmission: true, unitProjectId: "all", occurrenceScope: "all", categoryId: "all", templateAssetId: null, source: "ai_recommended" });
+        });
 
         return {
             expertId: expertId,
@@ -71,7 +74,7 @@
         }
 
         if (section === "requiredDocuments") {
-            return { documentType: id, title: title };
+            return { documentType: id, title: title, required: global.confirm("필수 문서로 지정할까요?"), purpose: global.prompt("문서 용도를 입력해주세요.", "예산 집행·보탬e 제출") || "운영 증빙", botameSubmission: global.confirm("보탬e 제출자료에 포함할까요?"), unitProjectId: global.prompt("적용 단위사업 ID를 입력해주세요. 전체 적용은 all", "all") || "all", occurrenceScope: global.prompt("적용 회차를 입력해주세요. 전체 적용은 all", "all") || "all", categoryId: global.prompt("적용 예산항목 ID를 입력해주세요. 전체 적용은 all", "all") || "all", templateAssetId: null, source: "expert_added" };
         }
 
         return { categoryId: id, title: title, amount: Number(global.prompt("승인금액을 입력해주세요.", "0")) || 0 };
@@ -100,6 +103,15 @@
 
         if (section === "approvedBudget") {
             changes.amount = Number(global.prompt("승인금액을 입력해주세요.", item.amount)) || 0;
+        }
+
+        if (section === "requiredDocuments") {
+            changes.required = global.confirm("필수 증빙으로 지정할까요?");
+            changes.purpose = global.prompt("문서 용도", item.purpose || "운영 증빙") || "운영 증빙";
+            changes.botameSubmission = global.confirm("보탬e 제출자료에 포함할까요?");
+            changes.unitProjectId = global.prompt("적용 단위사업 ID", item.unitProjectId || "all") || "all";
+            changes.occurrenceScope = global.prompt("적용 회차", item.occurrenceScope || "all") || "all";
+            changes.categoryId = global.prompt("적용 예산항목 ID", item.categoryId || "all") || "all";
         }
 
         return changes;

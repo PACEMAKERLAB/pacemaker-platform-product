@@ -47,7 +47,10 @@
             var plannedCount = Number(unitProject.plannedCount) || 0;
             var dates = unitProject.occurrenceDates || [];
             var preparationTasks = unitProject.preparationTasks || [];
-            var requiredDocumentTypes = unitProject.requiredDocumentTypes || [];
+            var applicableEvidence = (operation.requiredDocuments || []).filter(function (requirement) {
+                return requirement.required !== false && (requirement.unitProjectId === "all" || requirement.unitProjectId === unitProject.unitProjectId);
+            });
+            var requiredDocumentTypes = Array.from(new Set((unitProject.requiredDocumentTypes || []).concat(applicableEvidence.map(function (requirement) { return requirement.documentType; }))));
             var round;
 
             for (round = 1; round <= plannedCount; round += 1) {
@@ -99,6 +102,9 @@
 
                 requiredDocumentTypes.forEach(function (documentType) {
                     var document = documents[documentType];
+                    var evidenceRule = applicableEvidence.find(function (requirement) { return requirement.documentType === documentType; });
+                    var scopedRounds = evidenceRule && String(evidenceRule.occurrenceScope || "all").split(",").map(function (value) { return value.trim(); });
+                    if (evidenceRule && scopedRounds.indexOf("all") < 0 && scopedRounds.indexOf(String(round)) < 0 && (unitProject.requiredDocumentTypes || []).indexOf(documentType) < 0) { return; }
                     var requirementId = createId("DOC", [operation.operationId, operation.currentVersion, occurrenceId, documentType]);
 
                     output.documentRequirements.push({
@@ -107,6 +113,9 @@
                         occurrenceId: occurrenceId,
                         documentType: documentType,
                         title: document ? document.title : documentType,
+                        evidenceRequirementId: evidenceRule ? evidenceRule.documentType : null,
+                        categoryId: evidenceRule ? evidenceRule.categoryId : "all",
+                        botameSubmission: evidenceRule ? evidenceRule.botameSubmission : false,
                         status: "missing",
                         attachmentIds: []
                     });

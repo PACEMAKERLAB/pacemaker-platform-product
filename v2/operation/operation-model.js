@@ -32,6 +32,7 @@
             lifecycle: clone(source.lifecycle || []),
             unitProjects: clone(source.unitProjects || []),
             requiredDocuments: clone(source.requiredDocuments || []),
+            evidenceRequirements: clone(source.evidenceRequirements || []),
             budget: clone(source.budget || { approved: [], used: [] }),
             review: {
                 requestedAt: null,
