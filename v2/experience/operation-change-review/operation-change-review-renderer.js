@@ -19,8 +19,9 @@
             root.innerHTML = '<header class="topbar"><b>PACEMAKER</b><span>전문가 변경 검토 완료</span></header><main class="wrap">' +
                 '<section class="complete"><p class="eyebrow">OPERATION CHANGED</p><h1>변경 내용이 Operation에 반영되었습니다.</h1>' +
                 '<p>소식지 계획이 3회에서 2회로 변경됐고, 영향분석 결과와 확정자가 History에 기록되었습니다.</p>' +
-                '<div class="summary"><div><span>현재 상태</span><strong>' + escapeHtml(state.operation.status) + '</strong></div>' +
-                '<div><span>요구사항</span><strong>' + impact.afterRequirementCount + '개</strong></div><div><span>삭제 항목</span><strong>' + impact.removedAssignments.length + '개</strong></div></div></section></main>';
+                '<div class="summary"><div><span>현재 버전</span><strong>' + escapeHtml(state.operation.currentVersion) + '</strong></div>' +
+                '<div><span>이전 버전 보존</span><strong>' + escapeHtml(state.previousVersions[0].version) + '</strong></div>' +
+                '<div><span>요구사항</span><strong>' + impact.afterRequirementCount + '개</strong></div><div><span>History</span><strong>' + state.historyEvents.length + '건</strong></div></div></section></main>';
             return;
         }
         root.innerHTML = '<header class="topbar"><b>PACEMAKER</b><span>전문가 변경 검토</span></header><main class="wrap">' +

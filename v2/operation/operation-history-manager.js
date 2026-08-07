@@ -18,6 +18,9 @@
             operationVersion: input.operationVersion || null,
             actorId: input.actorId || null,
             reason: input.reason || null,
+            changeRequestId: input.changeRequestId || null,
+            changeImpactId: input.changeImpactId || null,
+            details: input.details || null,
             occurredAt: input.occurredAt || new Date().toISOString()
         };
     }

@@ -31,6 +31,9 @@
             operationId: "OPR-2026-0001", confirmedProtocol: protocol, analysisResult: analysis,
             protocolRecommendation: recommendation, createdBy: expertId, createdAt: new Date().toISOString()
         });
+        operation.status = global.PacemakerV2.Operation.Schema.status.CONFIRMED;
+        operation.currentVersion = "V001";
+        operation.confirmation = { confirmedAt: "2026-08-07T18:30:00.000Z", confirmedBy: expertId };
         var proposed = global.PacemakerV2.Operation.Model.clone(analysis);
         proposed.unitProjects[0].plannedCount = 2;
         proposed.unitProjects[0].occurrenceDates = proposed.unitProjects[0].occurrenceDates.slice(0, 2);
@@ -41,7 +44,8 @@
             requestedChange: { unitProjectId: "UNT-001", title: "마을 소식지", field: "plannedCount", before: 3, after: 2 },
             analyzedAt: new Date().toISOString(), analyzedBy: expertId
         });
-        return { expertId: expertId, operation: operation, proposedAnalysis: proposed, impact: impact, completed: false, error: null };
+        return { expertId: expertId, operation: operation, proposedAnalysis: proposed, impact: impact,
+            previousVersions: [], historyEvents: [], completed: false, error: null };
     }
 
     function start(options) {
@@ -56,12 +60,16 @@
             }
             if (button.dataset.action === "confirm") {
                 try {
-                    state.operation = global.PacemakerV2.Engine.OperationChange.ChangeConfirmer.confirm({
+                    var result = global.PacemakerV2.Runtime.OperationChange.confirm({
                         currentOperation: state.operation, proposedAnalysisResult: state.proposedAnalysis,
                         changeImpact: state.impact, changeRequestId: "CRQ-2026-0001",
                         reason: "여름호 대체 사업 추진을 위한 소식지 계획 변경",
-                        confirmedAt: new Date().toISOString(), confirmedBy: state.expertId
+                        confirmedAt: new Date().toISOString(), confirmedBy: state.expertId,
+                        previousVersions: state.previousVersions, historyEvents: state.historyEvents
                     });
+                    state.operation = result.operation;
+                    state.previousVersions = result.previousVersions;
+                    state.historyEvents = result.historyEvents;
                     state.completed = true;
                     state.error = null;
                 } catch (error) { state.error = error.message; }
