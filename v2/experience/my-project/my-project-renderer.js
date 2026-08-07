@@ -310,6 +310,13 @@
     function renderBudget(state) {
         var view = state.budgetView;
         var unitMode = state.budgetMode !== "category";
+        var pendingExpenses = state.budgetState.expenseResolutions.filter(function (item) { return item.status === "pending"; });
+        var pendingPanel = pendingExpenses.length ? '<section class="expense-review-panel"><header><div><span class="section-kicker">전문가 확인</span><h2>확인 대기 지출결의서 ' + pendingExpenses.length + '건</h2></div></header>' + pendingExpenses.map(function (item) {
+            var unit = state.budgetState.unitProjects.find(function (candidate) { return candidate.unitProjectId === item.unitProjectId; }) || {};
+            var category = state.budgetState.categories.find(function (candidate) { return candidate.categoryId === item.categoryId; }) || {};
+            var round = Number((item.occurrenceId || '').split('R').pop());
+            return '<div class="expense-review-row"><div><strong>' + e(unit.title) + ' · ' + round + '회차</strong><span>' + e(category.title) + ' · ' + money(item.amount) + (item.evidenceAttached ? ' · 증빙 완료' : ' · 증빙 누락') + '</span></div><div><button class="secondary-button" data-action="reject-expense-resolution" data-expense-id="' + e(item.expenseResolutionId) + '">반려·보완</button><button class="primary-button" data-action="approve-expense-resolution" data-expense-id="' + e(item.expenseResolutionId) + '">승인</button></div></div>';
+        }).join('') + '</section>' : '';
         var cards = unitMode ? view.units.map(function (unit) {
             var occurrences = unit.occurrences.length ? unit.occurrences.map(function (item) {
                 return '<li><strong>' + item.occurrenceNumber + '회차 · ' + e(item.categoryTitle) + '</strong><span>' + money(item.amount) +
@@ -333,7 +340,7 @@
             '<p>승인된 지출결의서의 단위사업·회차·지출항목을 읽어 자동 집계합니다.</p></div><div class="heading-actions"><span class="plan-source">Operation ' + e(view.operationVersion) + ' 기준</span><button class="secondary-button" data-action="open-expense-resolution">+ 지출결의서 등록</button></div></div>' +
             '<div class="budget-control-summary"><div><span>승인예산</span><strong>' + money(view.summary.approvedTotal) + '</strong></div><div><span>사용예산</span><strong>' + money(view.summary.usedTotal) +
             '</strong></div><div><span>잔여예산</span><strong>' + money(view.summary.remainingTotal) + '</strong></div><div><span>집행률</span><strong>' + view.summary.usageRate +
-            '%</strong></div><div><span>증빙 누락</span><strong>' + view.summary.missingEvidenceCount + '건</strong></div></div>' + (state.budgetNotice ? '<div class="document-notice">' + e(state.budgetNotice) + '</div>' : '') + '<div class="budget-view-switch"><button data-action="change-budget-view" data-budget-view="unit" class="' +
+            '%</strong></div><div><span>증빙 누락</span><strong>' + view.summary.missingEvidenceCount + '건</strong></div></div>' + (state.budgetNotice ? '<div class="document-notice">' + e(state.budgetNotice) + '</div>' : '') + pendingPanel + '<div class="budget-view-switch"><button data-action="change-budget-view" data-budget-view="unit" class="' +
             (unitMode ? 'active' : '') + '">단위사업별</button><button data-action="change-budget-view" data-budget-view="category" class="' + (!unitMode ? 'active' : '') + '">예산항목별</button></div>' +
             '<div class="budget-category-list ' + (unitMode ? 'budget-unit-list' : '') + '">' + cards + '</div></section>';
     }

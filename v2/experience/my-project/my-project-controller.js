@@ -87,6 +87,19 @@
                     state.budgetDraft = null;
                 } catch (error) { state.budgetNotice = error.message; }
             }
+            if (action && (action.dataset.action === "approve-expense-resolution" || action.dataset.action === "reject-expense-resolution")) {
+                var expenseIndex = budgetState.expenseResolutions.findIndex(function (item) { return item.expenseResolutionId === action.dataset.expenseId; });
+                var expenseDecision = action.dataset.action === "approve-expense-resolution" ? "approved" : "rejected";
+                var reviewedExpense = global.PacemakerV2.Runtime.ExpenseResolutionReview.review({
+                    expenseResolution: budgetState.expenseResolutions[expenseIndex], decision: expenseDecision,
+                    reviewedAt: new Date().toISOString(), reviewedBy: "USR-EXPERT-0001",
+                    reviewNote: expenseDecision === "approved" ? "집행내역 확인 완료" : "증빙자료 보완 후 다시 요청해주세요.",
+                    historyEventId: "HST-EXPENSE-" + Date.now()
+                });
+                budgetState.expenseResolutions[expenseIndex] = reviewedExpense.expenseResolution;
+                state.budgetView = global.PacemakerV2.Engine.Budget.ControlProjector.project({ budgetState: budgetState });
+                state.budgetNotice = "지출결의서를 " + (expenseDecision === "approved" ? "승인하여 사용예산에 반영했습니다." : "반려했습니다. 보완 할 일이 다시 생성됩니다.");
+            }
             if (action && action.dataset.action === "toggle-history") {
                 state.showHistory = !state.showHistory;
             }
